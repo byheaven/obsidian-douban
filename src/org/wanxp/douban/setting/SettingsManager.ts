@@ -199,6 +199,7 @@ export default class SettingsManager {
 	resetSetting() {
 		this.settings.scoreSetting = DEFAULT_SETTINGS.scoreSetting;
 		this.settings.arraySettings = DEFAULT_SETTINGS.arraySettings;
+		this.settings.arrayLengthLimits = [...DEFAULT_SETTINGS.arrayLengthLimits];
 		this.settings.arrayStart = DEFAULT_SETTINGS.arrayStart;
 		this.settings.arrayElementStart = DEFAULT_SETTINGS.arrayElementStart;
 		this.settings.arraySpiltV2 = DEFAULT_SETTINGS.arraySpiltV2;
