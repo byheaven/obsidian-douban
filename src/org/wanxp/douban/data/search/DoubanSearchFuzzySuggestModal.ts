@@ -56,6 +56,8 @@ class DoubanFuzzySuggester extends FuzzySuggestModal<DoubanSearchResultSubject> 
 	}
 
 	async onChooseItem(item: DoubanSearchResultSubject, evt: MouseEvent | KeyboardEvent):Promise<void>  {
+		evt.preventDefault();
+		evt.stopImmediatePropagation();
 		if(this.isNavigate(item)) {
 			if (await this.handleNavigate(item)) {
 				this.start();

@@ -3,8 +3,8 @@ import {TextInputSuggest} from "./TextInputSuggest";
 import SettingsManager from "../SettingsManager";
 
 export class FileTreeSelectSuggest extends TextInputSuggest<TAbstractFile> {
-	parentPath: string = "/";
-	settingKey: string = "";
+	parentPath = "/";
+	settingKey = "";
 	manager: SettingsManager;
 
 	constructor(app: App, inputEl: HTMLInputElement, manager: SettingsManager, settingKey:string) {
@@ -35,8 +35,8 @@ export class FileTreeSelectSuggest extends TextInputSuggest<TAbstractFile> {
 					currentName = "";
 				}
 			}
-		}catch (e) {
-
+		} catch {
+			// Keep suggesting from the nearest valid parent for incomplete paths.
 		}
 		if (parentSearchPath == null) {
 			parentSearchPath = inputStr.lastIndexOf("/") > 0 ? inputStr.substring(0, inputStr.lastIndexOf("/")) : "/";
@@ -46,7 +46,9 @@ export class FileTreeSelectSuggest extends TextInputSuggest<TAbstractFile> {
 		if (currentName == null) {
 			currentName = "";
 		}
-		const root = this.app.vault.getAbstractFileByPath(parentSearchPath) as TFolder;
+		const root = parentSearchPath === "/"
+			? this.app.vault.getRoot()
+			: this.app.vault.getAbstractFileByPath(parentSearchPath) as TFolder;
 		if (!root) {
 			return [];
 		}

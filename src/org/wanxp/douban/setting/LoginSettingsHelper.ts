@@ -5,6 +5,7 @@ import DoubanLoginModel from "../component/DoubanLoginModel";
 import User from "../user/User";
 import StringUtil from "../../utils/StringUtil";
 import {log} from "../../utils/Logutil";
+import DoubanQrLoginModal from "../component/DoubanQrLoginModal";
 
 export function constructLoginUI(containerEl: HTMLElement, manager: SettingsManager) {
 	// containerEl.createEl('h3', { text: i18nHelper.getMessage('1210') });
@@ -60,16 +61,24 @@ export function constructLoginSettingsUI(containerEl: HTMLElement, manager: Sett
 	let loginSetting = containerEl.createDiv("login-button");
 	let loginCookie = containerEl.createDiv("login-button-cookie");
 
-	new Setting(loginSetting).setName(i18nHelper.getMessage('100131')).addButton((button) => {
-		return button
-			.setButtonText(i18nHelper.getMessage('100130'))
+	new Setting(loginSetting)
+		.setName(i18nHelper.getMessage('100131'))
+		.addButton((button) => button
+			.setButtonText(i18nHelper.getMessage('100140'))
+			.setCta()
+			.onClick(() => {
+				new DoubanQrLoginModal(manager.app, manager, () => {
+					constructDoubanTokenSettingsUI(containerEl, manager);
+				}).open();
+			}))
+		.addButton((button) => button
+			.setButtonText(i18nHelper.getMessage('100151'))
 			.onClick(async () => {
 				button.setDisabled(true);
-				manager.debug(`配置界面:点击登录按钮`)
+				manager.debug(`配置界面:点击网页登录按钮`)
 				const loginModel = new DoubanLoginModel(containerEl, manager);
 				await loginModel.doLogin();
-			});
-	});
+			}));
 	const loginCookieSetting:Setting = new Setting(loginSetting).setName(i18nHelper.getMessage('100133'));
 		// .setDesc(i18nHelper.getMessage('100134'))
 	loginCookieSetting.addButton((button) => {
@@ -114,12 +123,22 @@ export function constructLoginCookieSettingsUI(containerEl: HTMLElement, parentC
 			.setIcon('check')
 			.onClick(async () => {
 				manager.debug(`配置界面:确认输入Cookie`);
-				const user:User = await manager.plugin.userComponent.loginCookie(manager.getCookieTemp())
-				if (!user || !user.id) {
+				const cookie = (manager.getCookieTemp() || '').trim();
+				if (!cookie) {
 					log.notice(i18nHelper.getMessage('100137'))
 					return;
 				}
-				constructDoubanTokenSettingsUI(parentContainerEl, manager);
+				try {
+					const user:User = await manager.plugin.userComponent.loginCookie(cookie)
+					if (!user || !user.id) {
+						log.notice(i18nHelper.getMessage('100137'))
+						return;
+					}
+					constructDoubanTokenSettingsUI(parentContainerEl, manager);
+				} catch (e) {
+					manager.debug(`配置界面:Cookie登录失败:${e}`);
+					log.notice(i18nHelper.getMessage('100137'))
+				}
 			});
 	})
 		.addExtraButton((button) => {
@@ -153,7 +172,7 @@ ${i18nHelper.getMessage('100125')}`;
 				button.setDisabled(true);
 				manager.debug(`配置界面:点击退出登录按钮，准备退出登录`)
 				// manager.debug(`配置界面:登出界面退出登录请求检测成功，准备退出登录`)
-				manager.plugin.userComponent.logout();
+				await manager.plugin.userComponent.logout();
 				manager.debug(`配置界面:退出登录成功`);
 				constructDoubanTokenSettingsUI(containerEl, manager);
 			});
@@ -161,9 +180,33 @@ ${i18nHelper.getMessage('100125')}`;
 }
 
 function showMobileLogin(containerEl: HTMLElement, manager: SettingsManager) {
-	new Setting(containerEl)
-		.setName(i18nHelper.getMessage('100126'))
-		.setDesc(i18nHelper.getMessage('100129'))
+	manager.debug(`配置界面:移动端未登录-展示二维码和Cookie登录按钮`)
+	const loginSetting = containerEl.createDiv("login-button");
+	const loginCookie = containerEl.createDiv("login-button-cookie");
+	const mobileLoginSetting = new Setting(loginSetting)
+		.setName(i18nHelper.getMessage('100131'))
+		.addButton((button) => button
+			.setButtonText(i18nHelper.getMessage('100140'))
+			.setCta()
+			.onClick(() => {
+				new DoubanQrLoginModal(manager.app, manager, () => {
+					constructDoubanTokenSettingsUI(containerEl, manager);
+				}).open();
+			}))
+		.addButton((button) => button
+			.setButtonText(i18nHelper.getMessage('100135'))
+			.onClick(() => {
+				button.setDisabled(true);
+				constructLoginCookieSettingsUI(loginCookie, containerEl, manager);
+			}));
+	mobileLoginSetting.descEl.appendChild(createFragment((frag) => {
+		frag.appendText(i18nHelper.getMessage('100129'));
+		frag.createEl('a', {
+			text: i18nHelper.getMessage('100139'),
+			href: 'https://wanxp.github.io/obsidian-douban/20_howtouse_25_setting_login_douban_cookie.html'
+		}, (a) => a.setAttr('target', '_blank'));
+		frag.appendText(i18nHelper.getMessage('100138'));
+	}));
 }
 
 function showMobileLogout(containerEl: HTMLElement, manager: SettingsManager) {
@@ -183,10 +226,8 @@ ${i18nHelper.getMessage('100125')}`;
 				.setCta()
 				.onClick(async () => {
 					button.setDisabled(true);
-					manager.updateSetting('loginCookiesContent', '');
-					manager.updateSetting('loginHeadersContent', '');
+					await manager.plugin.userComponent.logout();
 					constructDoubanTokenSettingsUI(containerEl, manager);
 				});
 		});
 }
-

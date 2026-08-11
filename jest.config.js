@@ -1,10 +1,6 @@
-const { default: tsjPreset } = require('ts-jest/presets');
 module.exports = {
     preset: 'ts-jest',
     rootDir: './',
-    transform: {
-        ...tsjPreset.transform
-    },
     testRegex: '(/test/.*\\.(test|spec))\\.[tj]sx?$',
     moduleFileExtensions: [
         "ts",
@@ -12,13 +8,13 @@ module.exports = {
         "js",
         "jsx"
     ],
-    moduleNameWrapper: {
+    moduleNameMapper: {
         '^@APP/(.*)$': '<rootDir>/src/douban/$1'
     },
-    collectCoverageFrom: {
+    collectCoverageFrom: [
         "**/baseTs/upperFirst.ts",
         "**/baseTs/camelCase.ts",
         "!**/node_modules/**",
         "!**/vendor/**"
-    }
+    ]
 }

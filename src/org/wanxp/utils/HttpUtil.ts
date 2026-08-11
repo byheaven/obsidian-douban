@@ -35,7 +35,7 @@ export default class HttpUtil {
 		if (Platform.isDesktopApp) {
 			return DesktopHttpUtil.request(url, headers, settingsManager, options)
 		} else {
-			const response = await MobileHttpUtil.httpRequestGet(url, headers, settingsManager);
+			const response = await MobileHttpUtil.request(url, headers, settingsManager, options);
 			return new HttpResponse(response.status, response.headers, response.text);
 		}
 	}

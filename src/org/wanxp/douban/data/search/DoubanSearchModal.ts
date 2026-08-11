@@ -4,7 +4,6 @@ import DoubanPlugin from "../../../main";
 import {i18nHelper} from "src/org/wanxp/lang/helper";
 import HandleContext from "../model/HandleContext";
 import {SearchTypeRecords, SupportType} from "../../../constant/Constsant";
-import {sleep} from "../../../utils/TimeUtil";
 
 export class DoubanSearchModal extends Modal {
 	searchTerm: string;
@@ -36,7 +35,8 @@ export class DoubanSearchModal extends Modal {
 
 		searchInput.inputEl.addEventListener("keydown", (event) => {
 			if (event.key === "Enter") {
-				sleep(1000);
+				event.preventDefault();
+				event.stopImmediatePropagation();
 				this.close();
 			}
 		});
@@ -77,4 +77,3 @@ export class DoubanSearchModal extends Modal {
 	}
 
 }
-

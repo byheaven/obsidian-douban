@@ -2,7 +2,7 @@ import {TAbstractFile, TFile, TFolder} from "obsidian";
 import {TextInputSuggest} from "./TextInputSuggest";
 
 export class FolderTreeSelectSuggest extends TextInputSuggest<TAbstractFile> {
-	parentPath: string = "/";
+	parentPath = "/";
 
 	getSuggestions(inputStr: string): TAbstractFile[] {
 		const files: TAbstractFile[] = [];
@@ -25,8 +25,8 @@ export class FolderTreeSelectSuggest extends TextInputSuggest<TAbstractFile> {
 					currentName = "";
 				}
 			}
-		}catch (e) {
-
+		} catch {
+			// Keep suggesting from the nearest valid parent for incomplete paths.
 		}
 		if (parentSearchPath == null) {
 			parentSearchPath = inputStr.lastIndexOf("/") > 0 ? inputStr.substring(0, inputStr.lastIndexOf("/")) : "/";
@@ -36,7 +36,9 @@ export class FolderTreeSelectSuggest extends TextInputSuggest<TAbstractFile> {
 		if (currentName == null) {
 			currentName = "";
 		}
-		const root = this.app.vault.getAbstractFileByPath(parentSearchPath) as TFolder;
+		const root = parentSearchPath === "/"
+			? this.app.vault.getRoot()
+			: this.app.vault.getAbstractFileByPath(parentSearchPath) as TFolder;
 		if (!root) {
 			return [];
 		}

@@ -35,14 +35,14 @@ export default class UserComponent {
 		return this.user && this.user.login;
 	}
 
-	logout() {
+	async logout(): Promise<void> {
 		if (this.user) {
 			this.user.login = false;
 		}
 		this.user = null;
 		this.verified = false;
-		this.settingsManager.updateSetting('loginCookiesContent', '');
-		this.settingsManager.updateSetting('loginHeadersContent', '');
+		await this.settingsManager.updateSetting('loginCookiesContent', '');
+		await this.settingsManager.updateSetting('loginHeadersContent', '');
 
 	}
 
@@ -83,9 +83,11 @@ export default class UserComponent {
 			this.user = user;
 			this.settingsManager.debug(`配置界面:loginCookie:豆瓣headers信息正常，${user&&user.id?'获取用户信息成功id:'+ StringUtil.confuse(user.id) + ',用户名:'+ StringUtil.confuse(user.name) :'获取用户信息失败'}`);
 		});
-		if(this.user) {
+		if(this.user && this.user.id && this.user.login) {
 			this.verified = true;
-			this.settingsManager.updateSetting('loginHeadersContent', JSON.stringify(headers));
+			await this.settingsManager.updateSetting('loginHeadersContent', JSON.stringify(headers));
+		} else {
+			this.verified = false;
 		}
 		return this.user;
 	}
@@ -98,13 +100,30 @@ export default class UserComponent {
 
 	async loginCookie(cookie: any):Promise<User> {
 		const headers: object = this.settingsManager.getHeadersByCookie(cookie);
-		return this.loginHeaders(headers)
-			.then(user => {
-				if(this.user) {
-					this.settingsManager.updateSetting('loginCookiesContent', cookie);
-				}
-				return user;
-			});
+		const user = await this.loginHeaders(headers);
+		if(user && user.id && user.login) {
+			await this.settingsManager.updateSetting('loginCookiesContent', cookie);
+		}
+		return user;
+	}
+
+	async acceptQrLoginCookie(cookie: string): Promise<User> {
+		const match = String(cookie || '').match(/(?:^|;\s*)dbcl2=(?:"([^"]+)"|([^;]+))/i);
+		const credential = (match?.[1] || match?.[2] || '').trim();
+		const id = credential.split(':', 1)[0];
+		if (!id) {
+			return new User();
+		}
+		this.user = {
+			id,
+			name: id,
+			url: `https://www.douban.com/people/${id}/`,
+			login: true
+		};
+		this.verified = false;
+		await this.settingsManager.updateSetting('loginHeadersContent', '');
+		await this.settingsManager.updateSetting('loginCookiesContent', cookie);
+		return this.user;
 	}
 
 
@@ -158,6 +177,8 @@ export default class UserComponent {
 		});
 		if (this.user && this.user.id) {
 			this.verified = true;
+		} else {
+			this.verified = false;
 		}
 		return this.user;
 	}
