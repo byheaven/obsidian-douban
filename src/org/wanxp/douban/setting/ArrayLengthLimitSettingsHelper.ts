@@ -11,15 +11,18 @@ import {ArrayLengthLimit} from "./model/ArrayLengthLimit";
  * (如 actor/director/author/translator/aliases/...) 自定义最大保留数量。
  */
 export function constructArrayLengthLimitSettingsUI(containerEl: HTMLElement, manager: SettingsManager) {
-	containerEl.createEl('p', {text: i18nHelper.getMessage('1271')});
-	containerEl.createEl('p', {text: i18nHelper.getMessage('1272')});
+	const overview = containerEl.createDiv('obsidian_douban_section_card');
+	overview.createEl('h3', {cls: 'obsidian_douban_array_section_title', text: i18nHelper.getMessage('1270')});
+	overview.createEl('p', {cls: 'obsidian_douban_array_help', text: i18nHelper.getMessage('1271')});
+	overview.createEl('p', {cls: 'obsidian_douban_array_help obsidian_douban_array_hint', text: i18nHelper.getMessage('1272')});
 
 	if (!manager.plugin.settings.arrayLengthLimits) {
 		manager.plugin.settings.arrayLengthLimits = [];
 	}
 	const limits = manager.plugin.settings.arrayLengthLimits;
 
-	new Setting(containerEl)
+	new Setting(overview)
+		.setClass('obsidian_douban_array_section_header')
 		.setDesc(i18nHelper.getMessage('1273'))
 		.addButton((button) => {
 			button.setButtonText(i18nHelper.getMessage('124101'));
@@ -46,11 +49,12 @@ function renderItems(containerEl: HTMLElement, manager: SettingsManager) {
 function buildItem(containerEl: HTMLElement, manager: SettingsManager, limits: ArrayLengthLimit[], idx: number) {
 	const data = limits[idx];
 
-	const item = containerEl.createEl('li');
+	const item = containerEl.createDiv('obsidian_douban_array_limit_item');
 
 	// 适用类型
-	item.createEl('span', {text: i18nHelper.getMessage('127402')});
-	const typeDropdown = new DropdownComponent(item);
+	const typeField = item.createDiv('obsidian_douban_array_limit_field');
+	typeField.createEl('label', {text: i18nHelper.getMessage('127402')});
+	const typeDropdown = new DropdownComponent(typeField);
 	for (const fieldSelect in SupportType) {
 		typeDropdown.addOption(fieldSelect, i18nHelper.getMessage(fieldSelect));
 	}
@@ -66,11 +70,11 @@ function buildItem(containerEl: HTMLElement, manager: SettingsManager, limits: A
 		});
 	const typeEl = typeDropdown.selectEl;
 	typeEl.addClass('obsidian_douban_settings_input');
-	item.appendChild(typeEl);
 
 	// 字段名
-	item.createEl('span', {text: i18nHelper.getMessage('127403')});
-	const fieldField = new TextComponent(item);
+	const nameField = item.createDiv('obsidian_douban_array_limit_field');
+	nameField.createEl('label', {text: i18nHelper.getMessage('127403')});
+	const fieldField = new TextComponent(nameField);
 	fieldField.setPlaceholder(i18nHelper.getMessage('127404'))
 		.setValue(data.field || '')
 		.onChange(async (value) => {
@@ -79,11 +83,11 @@ function buildItem(containerEl: HTMLElement, manager: SettingsManager, limits: A
 		});
 	const fieldEl = fieldField.inputEl;
 	fieldEl.addClass('obsidian_douban_settings_input');
-	item.appendChild(fieldEl);
 
 	// 最大数量
-	item.createEl('span', {text: i18nHelper.getMessage('127405')});
-	const limitField = new TextComponent(item);
+	const maxField = item.createDiv('obsidian_douban_array_limit_field');
+	maxField.createEl('label', {text: i18nHelper.getMessage('127405')});
+	const limitField = new TextComponent(maxField);
 	limitField.setPlaceholder(i18nHelper.getMessage('127406'))
 		.setValue(data.limit != null ? String(data.limit) : '')
 		.onChange(async (value) => {
@@ -99,10 +103,10 @@ function buildItem(containerEl: HTMLElement, manager: SettingsManager, limits: A
 	limitEl.type = 'number';
 	limitEl.min = '0';
 	limitEl.addClass('obsidian_douban_settings_input');
-	item.appendChild(limitEl);
 
 	// 删除按钮
-	const removeBtn = new ButtonComponent(item);
+	const removeControl = item.createDiv('obsidian_douban_array_limit_remove');
+	const removeBtn = new ButtonComponent(removeControl);
 	removeBtn.setIcon('minus-with-circle');
 	removeBtn.setTooltip(i18nHelper.getMessage('127407'));
 	removeBtn.onClick(async () => {
@@ -111,5 +115,4 @@ function buildItem(containerEl: HTMLElement, manager: SettingsManager, limits: A
 	});
 	const removeBtnEl = removeBtn.buttonEl;
 	removeBtnEl.addClass('obsidian_douban_settings_button');
-	item.appendChild(removeBtnEl);
 }

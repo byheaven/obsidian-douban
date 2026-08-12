@@ -15,11 +15,11 @@ import TimeUtil from "../../utils/TimeUtil";
 
 
 export function constructAdvancedUI(containerEl: HTMLElement, manager: SettingsManager) {
-	// containerEl.createEl('h3', { text: i18nHelper.getMessage('1250') });
-	containerEl.createEl('p', { text: i18nHelper.getMessage('1252') });
+	const overview = containerEl.createDiv('obsidian_douban_section_card obsidian_douban_section_overview');
+	overview.createEl('p', { text: i18nHelper.getMessage('1252') });
 
 	// const settings:Setting = new Setting(containerEl);
-	const advancedSettings = containerEl.createDiv('advanced-settings');
+	const advancedSettings = containerEl.createDiv('advanced-settings obsidian_douban_card_list');
 // 	settings.setDesc(i18nHelper.getMessage('1251')).addExtraButton((extraButton) => {
 // 		extraButton
 // 			.setIcon('reset')
@@ -154,4 +154,3 @@ function showConfirmDialog(message:string, promise:Promise<any>, manager: Settin
 		})
 	).open();
 }
-

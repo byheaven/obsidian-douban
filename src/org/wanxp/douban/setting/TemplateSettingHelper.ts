@@ -13,17 +13,20 @@ import {FolderTreeSelectSuggest} from "./model/FolderTreeSelectSuggest";
 
 
 export function constructTemplateUI(containerEl: HTMLElement, manager: SettingsManager) {
-	// containerEl.createEl('h3', { text: i18nHelper.getMessage('1203') });
-	containerEl.createEl('p', { text: i18nHelper.getMessage('1204') });
-	new Setting(containerEl).setDesc(i18nHelper.getMessage('1205'))
+	const overview = containerEl.createDiv('obsidian_douban_section_card obsidian_douban_section_overview');
+	overview.createEl('p', { text: i18nHelper.getMessage('1204') });
+	new Setting(overview)
+		.setClass('obsidian_douban_embedded_setting')
+		.setDesc(i18nHelper.getMessage('1205'));
 
-	new Setting(containerEl).then(createFileSelectionSetting({containerEl: containerEl, name: '120101', desc: '120102', placeholder: '121701', key: 'movieTemplateFile', manager: manager}));
-	new Setting(containerEl).then(createFileSelectionSetting({containerEl: containerEl, name: '120201', desc: '120202', placeholder: '121701', key: 'bookTemplateFile', manager: manager}));
-	new Setting(containerEl).then(createFileSelectionSetting({containerEl: containerEl, name: '120301', desc: '120302', placeholder: '121701', key: 'musicTemplateFile', manager: manager}));
-	new Setting(containerEl).then(createFileSelectionSetting({containerEl: containerEl, name: '120401', desc: '120402', placeholder: '121701', key: 'noteTemplateFile', manager: manager}));
-	new Setting(containerEl).then(createFileSelectionSetting({containerEl: containerEl, name: '121301', desc: '121302', placeholder: '121701', key: 'gameTemplateFile', manager: manager}));
-	new Setting(containerEl).then(createFileSelectionSetting({containerEl: containerEl, name: '121801', desc: '121802', placeholder: '121701', key: 'teleplayTemplateFile', manager: manager}));
-	new Setting(containerEl).then(createFileSelectionSetting({containerEl: containerEl, name: 'theaterTemplateName', desc: 'theaterTemplateDesc', placeholder: '121701', key: 'theaterTemplateFile', manager: manager}));
+	const templateList = containerEl.createDiv('obsidian_douban_card_list obsidian_douban_template_list');
+	new Setting(templateList).setClass('obsidian_douban_section_card').then(createFileSelectionSetting({containerEl: templateList, name: '120101', desc: '120102', placeholder: '121701', key: 'movieTemplateFile', manager: manager}));
+	new Setting(templateList).setClass('obsidian_douban_section_card').then(createFileSelectionSetting({containerEl: templateList, name: '120201', desc: '120202', placeholder: '121701', key: 'bookTemplateFile', manager: manager}));
+	new Setting(templateList).setClass('obsidian_douban_section_card').then(createFileSelectionSetting({containerEl: templateList, name: '120301', desc: '120302', placeholder: '121701', key: 'musicTemplateFile', manager: manager}));
+	new Setting(templateList).setClass('obsidian_douban_section_card').then(createFileSelectionSetting({containerEl: templateList, name: '120401', desc: '120402', placeholder: '121701', key: 'noteTemplateFile', manager: manager}));
+	new Setting(templateList).setClass('obsidian_douban_section_card').then(createFileSelectionSetting({containerEl: templateList, name: '121301', desc: '121302', placeholder: '121701', key: 'gameTemplateFile', manager: manager}));
+	new Setting(templateList).setClass('obsidian_douban_section_card').then(createFileSelectionSetting({containerEl: templateList, name: '121801', desc: '121802', placeholder: '121701', key: 'teleplayTemplateFile', manager: manager}));
+	new Setting(templateList).setClass('obsidian_douban_section_card').then(createFileSelectionSetting({containerEl: templateList, name: 'theaterTemplateName', desc: 'theaterTemplateDesc', placeholder: '121701', key: 'theaterTemplateFile', manager: manager}));
 }
 
 export function createFileSelectionSetting({containerEl, name, desc, placeholder, key, manager

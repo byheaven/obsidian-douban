@@ -1,342 +1,194 @@
 import SettingsManager from "./SettingsManager";
 import {i18nHelper} from "../../lang/helper";
-import {Setting} from "obsidian";
-import DoubanPlugin from "../../main";
+import {Notice} from "obsidian";
 
-export function constructTemplateVariablesUI(containerEl: HTMLElement, manager: SettingsManager) {
-	// containerEl.createEl('h3', { text: i18nHelper.getMessage('1230') });
-	containerEl.createEl('p', { text: i18nHelper.getMessage('122003') });
+interface VariableRow {
+	name: string;
+	descriptionKeySuffix?: string;
+	sharedDescriptionKey?: string;
+}
 
-	const basicVariablesTable = new DocumentFragment();
-	basicVariablesTable.createDiv().innerHTML = `
-${i18nHelper.getMessage('122004')}
-<br>
-<br>
-<table border="1">
-	<tr>
-		<th>${i18nHelper.getMessage('300101')}</th>
-		<th>${i18nHelper.getMessage('300102')}</th>
-		<th>${i18nHelper.getMessage('300103')}</th>
-		<th>${i18nHelper.getMessage('300104')}</th>
-		<th>${i18nHelper.getMessage('300105')}</th>
-		<th>${i18nHelper.getMessage('300106')}</th>
-		<th>${i18nHelper.getMessage('300107')}</th>
-		<th>${i18nHelper.getMessage('300108')}</th>
-	</tr>
-	<tr>
-		<td>id</td>
-		<td>${i18nHelper.getMessage('310101')}</td>
-		<td>${i18nHelper.getMessage('310201')}</td>
-		<td>${i18nHelper.getMessage('310301')}</td>
-		<td>${i18nHelper.getMessage('310401')}</td>
-		<td>${i18nHelper.getMessage('310501')}</td>
-		<td>${i18nHelper.getMessage('310601')}</td>
-		<td>${i18nHelper.getMessage('310701')}</td>
-	</tr>
-	<tr>
-		<td>title</td>
-		<td>${i18nHelper.getMessage('310102')}</td>
-		<td>${i18nHelper.getMessage('310202')}</td>
-		<td>${i18nHelper.getMessage('310302')}</td>
-		<td>${i18nHelper.getMessage('310402')}</td>
-		<td>${i18nHelper.getMessage('310502')}</td>
-		<td>${i18nHelper.getMessage('310602')}</td>
-		<td>${i18nHelper.getMessage('310702')}</td>
-	</tr>
-	<tr>
-		<td>type</td>
-		<td>${i18nHelper.getMessage('310103')}</td>
-		<td>${i18nHelper.getMessage('310203')}</td>
-		<td>${i18nHelper.getMessage('310303')}</td>
-		<td>${i18nHelper.getMessage('310403')}</td>
-		<td>${i18nHelper.getMessage('310503')}</td>
-		<td>${i18nHelper.getMessage('310603')}</td>
-		<td>${i18nHelper.getMessage('310703')}</td>
-	</tr>
-	<tr>
-		<td>score</td>
-		<td>${i18nHelper.getMessage('310104')}</td>
-		<td>${i18nHelper.getMessage('310204')}</td>
-		<td>${i18nHelper.getMessage('310304')}</td>
-		<td>${i18nHelper.getMessage('310404')}</td>
-		<td>${i18nHelper.getMessage('310504')}</td>
-		<td>${i18nHelper.getMessage('310604')}</td>
-		<td>${i18nHelper.getMessage('310704')}</td>
-	</tr>
-		<tr>
-		<td>scoreStar</td>
-		<td>${i18nHelper.getMessage('410200')}</td>
-		<td>${i18nHelper.getMessage('410200')}</td>
-		<td>${i18nHelper.getMessage('410200')}</td>
-		<td>${i18nHelper.getMessage('410200')}</td>
-		<td>${i18nHelper.getMessage('410200')}</td>
-		<td>${i18nHelper.getMessage('410200')}</td>
-		<td>${i18nHelper.getMessage('410200')}</td>
-	</tr>
-	<tr>
-		<td>image</td>
-		<td>${i18nHelper.getMessage('310105')}</td>
-		<td>${i18nHelper.getMessage('310205')}</td>
-		<td>${i18nHelper.getMessage('310305')}</td>
-		<td>${i18nHelper.getMessage('310405')}</td>
-		<td>${i18nHelper.getMessage('310505')}</td>
-		<td>${i18nHelper.getMessage('310605')}</td>
-		<td>${i18nHelper.getMessage('310705')}</td>
-	</tr>
-	<tr>
-		<td>imageData.url</td>
-		<td>${i18nHelper.getMessage('310121')}</td>
-		<td>${i18nHelper.getMessage('310221')}</td>
-		<td>${i18nHelper.getMessage('310321')}</td>
-		<td>${i18nHelper.getMessage('310421')}</td>
-		<td>${i18nHelper.getMessage('310521')}</td>
-		<td>${i18nHelper.getMessage('310621')}</td>
-		<td>${i18nHelper.getMessage('310721')}</td>
-	</tr>
-	<tr>
-		<td>url</td>
-		<td>${i18nHelper.getMessage('310106')}</td>
-		<td>${i18nHelper.getMessage('310206')}</td>
-		<td>${i18nHelper.getMessage('310306')}</td>
-		<td>${i18nHelper.getMessage('310406')}</td>
-		<td>${i18nHelper.getMessage('310506')}</td>
-		<td>${i18nHelper.getMessage('310606')}</td>
-		<td>${i18nHelper.getMessage('310706')}</td>
-	</tr>
-	<tr>
-		<td>desc</td>
-		<td>${i18nHelper.getMessage('310107')}</td>
-		<td>${i18nHelper.getMessage('310207')}</td>
-		<td>${i18nHelper.getMessage('310307')}</td>
-		<td>${i18nHelper.getMessage('310407')}</td>
-		<td>${i18nHelper.getMessage('310507')}</td>
-		<td>${i18nHelper.getMessage('310607')}</td>
-		<td>${i18nHelper.getMessage('310707')}</td>
-		
-	</tr>
-	<tr>
-		<td>publisher</td>
-		<td>${i18nHelper.getMessage('310108')}</td>
-		<td>${i18nHelper.getMessage('310208')}</td>
-		<td>${i18nHelper.getMessage('310308')}</td>
-		<td>${i18nHelper.getMessage('310408')}</td>
-		<td>${i18nHelper.getMessage('310508')}</td>
-		<td>${i18nHelper.getMessage('310608')}</td>
-		<td>${i18nHelper.getMessage('310708')}</td>
-	</tr>
-	<tr>
-		<td>datePublished</td>
-		<td>${i18nHelper.getMessage('310109')}</td>
-		<td>${i18nHelper.getMessage('310209')}</td>
-		<td>${i18nHelper.getMessage('310309')}</td>
-		<td>${i18nHelper.getMessage('310409')}</td>
-		<td>${i18nHelper.getMessage('310509')}</td>
-		<td>${i18nHelper.getMessage('310609')}</td>
-		<td>${i18nHelper.getMessage('310709')}</td>
-	</tr>
-	
-	<tr>
-		<td>yearPublished</td>
-		<td>${i18nHelper.getMessage('310130')}</td>
-		<td>${i18nHelper.getMessage('310230')}</td>
-		<td>${i18nHelper.getMessage('310330')}</td>
-		<td>${i18nHelper.getMessage('310430')}</td>
-		<td>${i18nHelper.getMessage('310530')}</td>
-		<td>${i18nHelper.getMessage('310630')}</td>
-		<td>${i18nHelper.getMessage('310730')}</td>
-	</tr>
-	
-	<tr>
-		<td>genre</td>
-		<td>${i18nHelper.getMessage('310110')}</td>
-		<td>${i18nHelper.getMessage('310210')}</td>
-		<td>${i18nHelper.getMessage('310310')}</td>
-		<td>${i18nHelper.getMessage('310410')}</td>
-		<td>${i18nHelper.getMessage('310510')}</td>
-		<td>${i18nHelper.getMessage('310610')}</td>
-		<td>${i18nHelper.getMessage('310710')}</td>
-	</tr>
-	<tr>
-		<td>currentDate</td>
-		<td>${i18nHelper.getMessage('330101')}</td>
-		<td>${i18nHelper.getMessage('330101')}</td>
-		<td>${i18nHelper.getMessage('330101')}</td>
-		<td>${i18nHelper.getMessage('330101')}</td>
-		<td>${i18nHelper.getMessage('330101')}</td>
-		<td>${i18nHelper.getMessage('330101')}</td>
-		<td>${i18nHelper.getMessage('330101')}</td>
-	</tr>
-	<tr>
-		<td>currentTime</td>
-		<td>${i18nHelper.getMessage('330102')}</td>
-		<td>${i18nHelper.getMessage('330102')}</td>
-		<td>${i18nHelper.getMessage('330102')}</td>
-		<td>${i18nHelper.getMessage('330102')}</td>
-		<td>${i18nHelper.getMessage('330102')}</td>
-		<td>${i18nHelper.getMessage('330102')}</td>
-		<td>${i18nHelper.getMessage('330102')}</td>
-	</tr>
-</table>`;
+type VariableCopyMode = 'name' | 'description';
 
-	new Setting(containerEl)
-		.setName(i18nHelper.getMessage('122001'))
-		.setDesc(basicVariablesTable)
-	;
+const BASIC_VARIABLES: VariableRow[] = [
+	{name: 'id', descriptionKeySuffix: '01'},
+	{name: 'title', descriptionKeySuffix: '02'},
+	{name: 'type', descriptionKeySuffix: '03'},
+	{name: 'score', descriptionKeySuffix: '04'},
+	{name: 'scoreStar', sharedDescriptionKey: '410200'},
+	{name: 'image', descriptionKeySuffix: '05'},
+	{name: 'imageData.url', descriptionKeySuffix: '21'},
+	{name: 'url', descriptionKeySuffix: '06'},
+	{name: 'desc', descriptionKeySuffix: '07'},
+	{name: 'publisher', descriptionKeySuffix: '08'},
+	{name: 'datePublished', descriptionKeySuffix: '09'},
+	{name: 'yearPublished', descriptionKeySuffix: '30'},
+	{name: 'genre', descriptionKeySuffix: '10'},
+	{name: 'currentDate', sharedDescriptionKey: '330101'},
+	{name: 'currentTime', sharedDescriptionKey: '330102'}
+];
 
+const EXTRA_VARIABLE_SUFFIXES = ['11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '22'];
 
-	const extraVariablesTable = new DocumentFragment();
-	extraVariablesTable.createDiv().innerHTML = `
-${i18nHelper.getMessage('122004')}
-<br>
-<br>
-<table border="1">
-	<tr>
-		<th>${i18nHelper.getMessage('300101')}</th>
-		<th>${i18nHelper.getMessage('300102')}</th>
-		<th>${i18nHelper.getMessage('300103')}</th>
-		<th>${i18nHelper.getMessage('300104')}</th>
-		<th>${i18nHelper.getMessage('300105')}</th>
-		<th>${i18nHelper.getMessage('300106')}</th>
-		<th>${i18nHelper.getMessage('300107')}</th>
-		<th>${i18nHelper.getMessage('300108')}</th>
-	</tr>
-	<tr>
-		<td>${i18nHelper.getMessage('320101')}</th>
-		<td>${i18nHelper.getMessage('310111')}</th>
-		<td>${i18nHelper.getMessage('310211')}</th>
-		<td>${i18nHelper.getMessage('310311')}</th>
-		<td>${i18nHelper.getMessage('310411')}</th>
-		<td>${i18nHelper.getMessage('310511')}</th>
-		<td>${i18nHelper.getMessage('310611')}</th>
-		<td>${i18nHelper.getMessage('310711')}</th>
-	</tr>
-		<td>${i18nHelper.getMessage('320102')}</th>
-		<td>${i18nHelper.getMessage('310112')}</th>
-		<td>${i18nHelper.getMessage('310212')}</th>
-		<td>${i18nHelper.getMessage('310312')}</th>
-		<td>${i18nHelper.getMessage('310412')}</th>
-		<td>${i18nHelper.getMessage('310512')}</th>
-		<td>${i18nHelper.getMessage('310612')}</th>
-		<td>${i18nHelper.getMessage('310712')}</th>
-	</tr>
-	<tr>
-		<td>${i18nHelper.getMessage('320103')}</th>
-		<td>${i18nHelper.getMessage('310113')}</th>
-		<td>${i18nHelper.getMessage('310213')}</th>
-		<td>${i18nHelper.getMessage('310313')}</th>
-		<td>${i18nHelper.getMessage('310413')}</th>
-		<td>${i18nHelper.getMessage('310513')}</th>
-		<td>${i18nHelper.getMessage('310613')}</th>
-		<td>${i18nHelper.getMessage('310713')}</th>
-	</tr>
-	<tr>
-		<td>${i18nHelper.getMessage('320104')}</th>
-		<td>${i18nHelper.getMessage('310114')}</th>
-		<td>${i18nHelper.getMessage('310214')}</th>
-		<td>${i18nHelper.getMessage('310314')}</th>
-		<td>${i18nHelper.getMessage('310414')}</th>
-		<td>${i18nHelper.getMessage('310514')}</th>
-		<td>${i18nHelper.getMessage('310614')}</th>
-		<td>${i18nHelper.getMessage('310714')}</th>
-	</tr>
-	<tr>
-		<td>${i18nHelper.getMessage('320105')}</th>
-		<td>${i18nHelper.getMessage('310115')}</th>
-		<td>${i18nHelper.getMessage('310215')}</th>
-		<td>${i18nHelper.getMessage('310315')}</th>
-		<td>${i18nHelper.getMessage('310415')}</th>
-		<td>${i18nHelper.getMessage('310515')}</th>
-		<td>${i18nHelper.getMessage('310615')}</th>
-		<td>${i18nHelper.getMessage('310715')}</th>
-	</tr>
-	<tr>
-		<td>${i18nHelper.getMessage('320106')}</th>
-		<td>${i18nHelper.getMessage('310116')}</th>
-		<td>${i18nHelper.getMessage('310216')}</th>
-		<td>${i18nHelper.getMessage('310316')}</th>
-		<td>${i18nHelper.getMessage('310416')}</th>
-		<td>${i18nHelper.getMessage('310516')}</th>
-		<td>${i18nHelper.getMessage('310616')}</th>
-		<td>${i18nHelper.getMessage('310716')}</th>
-	</tr>
-	<tr>
-		<td>${i18nHelper.getMessage('320107')}</th>
-		<td>${i18nHelper.getMessage('310117')}</th>
-		<td>${i18nHelper.getMessage('310217')}</th>
-		<td>${i18nHelper.getMessage('310317')}</th>
-		<td>${i18nHelper.getMessage('310417')}</th>
-		<td>${i18nHelper.getMessage('310517')}</th>
-		<td>${i18nHelper.getMessage('310617')}</th>
-		<td>${i18nHelper.getMessage('310717')}</th>
-	</tr>
-	
-	<tr>
-		<td>${i18nHelper.getMessage('320108')}</th>
-		<td>${i18nHelper.getMessage('310118')}</th>
-		<td>${i18nHelper.getMessage('310218')}</th>
-		<td>${i18nHelper.getMessage('310318')}</th>
-		<td>${i18nHelper.getMessage('310418')}</th>
-		<td>${i18nHelper.getMessage('310518')}</th>
-		<td>${i18nHelper.getMessage('310618')}</th>
-		<td>${i18nHelper.getMessage('310718')}</th>
-	</tr>
-	
-	<tr>
-		<td>${i18nHelper.getMessage('320109')}</th>
-		<td>${i18nHelper.getMessage('310119')}</th>
-		<td>${i18nHelper.getMessage('310219')}</th>
-		<td>${i18nHelper.getMessage('310319')}</th>
-		<td>${i18nHelper.getMessage('310419')}</th>
-		<td>${i18nHelper.getMessage('310519')}</th>
-		<td>${i18nHelper.getMessage('310619')}</th>
-		<td>${i18nHelper.getMessage('310719')}</th>
-	</tr>
-	
-	<tr>
-		<td>${i18nHelper.getMessage('320110')}</th>
-		<td>${i18nHelper.getMessage('310120')}</th>
-		<td>${i18nHelper.getMessage('310220')}</th>
-		<td>${i18nHelper.getMessage('310320')}</th>
-		<td>${i18nHelper.getMessage('310420')}</th>
-		<td>${i18nHelper.getMessage('310520')}</th>
-		<td>${i18nHelper.getMessage('310620')}</th>
-		<td>${i18nHelper.getMessage('310720')}</th>
-	</tr>
-			<tr>
-		<td>${i18nHelper.getMessage('320111')}</th>
-		<td>${i18nHelper.getMessage('310122')}</th>
-		<td>${i18nHelper.getMessage('310222')}</th>
-		<td>${i18nHelper.getMessage('310322')}</th>
-		<td>${i18nHelper.getMessage('310422')}</th>
-		<td>${i18nHelper.getMessage('310522')}</th>
-		<td>${i18nHelper.getMessage('310622')}</th>
-		<td>${i18nHelper.getMessage('310722')}</th>
-	</tr>
-</table>`;
+const USER_VARIABLES = [
+	{name: 'myTags', descriptionKey: '160226'},
+	{name: 'myRating', descriptionKey: '160227'},
+	{name: 'myRatingStar', descriptionKey: '160231'},
+	{name: 'myState', descriptionKey: '160228'},
+	{name: 'myComment', descriptionKey: '160229'},
+	{name: 'myCollectionDate', descriptionKey: '160230'},
+	{name: 'imageName', descriptionKey: 'imageNameDesc'},
+	{name: 'popularComments', descriptionKey: 'popularCommentsDesc'}
+];
 
+export function constructTemplateVariablesUI(containerEl: HTMLElement, _manager: SettingsManager) {
+	createVariableSection(
+		containerEl,
+		i18nHelper.getMessage('122001'),
+		BASIC_VARIABLES,
+		'name',
+		i18nHelper.getMessage('122003'),
+		i18nHelper.getMessage('122004')
+	);
 
-	new Setting(containerEl)
-		.setName(i18nHelper.getMessage('122002'))
-		.setDesc(extraVariablesTable);
+	const extraVariables = EXTRA_VARIABLE_SUFFIXES.map((suffix, index) => ({
+		name: i18nHelper.getMessage(`3201${String(index + 1).padStart(2, '0')}`),
+		descriptionKeySuffix: suffix
+	}));
+	createVariableSection(
+		containerEl,
+		i18nHelper.getMessage('122002'),
+		extraVariables,
+		'description',
+		undefined,
+		i18nHelper.getMessage('122005')
+	);
 
+	createUserVariableSection(containerEl);
+}
 
-	const userInfoVariables = new DocumentFragment();
-	userInfoVariables.createDiv().innerHTML = `
-${i18nHelper.getMessage('160225')}
-<br>
-<strong>myTags</strong> → ${i18nHelper.getMessage('160226')}<br>
-<strong>myRating</strong> → ${i18nHelper.getMessage('160227')}<br>
-<strong>myRatingStar</strong> → ${i18nHelper.getMessage('160231')}<br>
-<strong>myState</strong> → ${i18nHelper.getMessage('160228')}<br>
-<strong>myComment</strong> → ${i18nHelper.getMessage('160229')}<br>
-<strong>myCollectionDate</strong> → ${i18nHelper.getMessage('160230')}<br>
-<strong>imageName</strong> → ${i18nHelper.getMessage('imageNameDesc')}<br>
-<strong>popularComments</strong> → ${i18nHelper.getMessage('popularCommentsDesc')}<br>
+function createVariableSection(
+	containerEl: HTMLElement,
+	title: string,
+	variables: VariableRow[],
+	copyMode: VariableCopyMode,
+	summary?: string,
+	help?: string
+) {
+	const section = containerEl.createDiv('obsidian_douban_variable_card');
+	section.createEl('h3', {cls: 'obsidian_douban_variable_title', text: title});
+	if (summary) {
+		section.createEl('p', {cls: 'obsidian_douban_variable_summary', text: summary});
+	}
+	if (help) {
+		section.createEl('p', {cls: 'obsidian_douban_variable_help', text: help});
+	}
 
+	createVariableTable(section, variables, copyMode);
+}
 
-`
-	;
-	new Setting(containerEl)
-		.setName(i18nHelper.getMessage('122010'))
-		.setDesc(userInfoVariables);
+function createVariableTable(containerEl: HTMLElement, variables: VariableRow[], copyMode: VariableCopyMode) {
+	const scrollContainer = containerEl.createDiv('obsidian_douban_variable_table_scroll');
+	const table = scrollContainer.createEl('table', {cls: 'obsidian_douban_variable_table'});
+	const header = table.createEl('thead').createEl('tr');
+
+	// 广播类型已移除，仅展示参数名及当前支持的六种内容类型。
+	for (let index = 1; index <= 7; index++) {
+		header.createEl('th', {
+			attr: {scope: 'col'},
+			text: i18nHelper.getMessage(`30010${index}`)
+		});
+	}
+
+	const body = table.createEl('tbody');
+	for (const variable of variables) {
+		const row = body.createEl('tr');
+		const nameCell = row.createEl('th', {attr: {scope: 'row'}});
+		if (copyMode === 'name') {
+			nameCell.createSpan({cls: 'obsidian_douban_variable_name', text: variable.name});
+			makeVariableCopyable(nameCell, variable.name);
+		} else {
+			nameCell.setText(variable.name);
+		}
+
+		for (const description of getVariableDescriptions(variable)) {
+			if (copyMode === 'description') {
+				createExtraVariableCell(row, description);
+			} else {
+				row.createEl('td', {text: description});
+			}
+		}
+	}
+}
+
+function createExtraVariableCell(row: HTMLTableRowElement, description: string) {
+	const cell = row.createEl('td');
+	const match = description.match(/^([A-Za-z][A-Za-z0-9_.]*)([:：])(.*)$/);
+	if (!match) {
+		cell.setText(description);
+		return;
+	}
+
+	const [, variableName, separator, label] = match;
+	cell.createSpan({cls: 'obsidian_douban_variable_name', text: variableName});
+	cell.appendText(`${separator}${label}`);
+	makeVariableCopyable(cell, variableName);
+}
+
+function getVariableDescriptions(variable: VariableRow): string[] {
+	if (variable.sharedDescriptionKey) {
+		return Array(6).fill(i18nHelper.getMessage(variable.sharedDescriptionKey));
+	}
+
+	return Array.from({length: 6}, (_, index) =>
+		i18nHelper.getMessage(`310${index + 1}${variable.descriptionKeySuffix}`)
+	);
+}
+
+function createUserVariableSection(containerEl: HTMLElement) {
+	const section = containerEl.createDiv('obsidian_douban_variable_card');
+	section.createEl('h3', {
+		cls: 'obsidian_douban_variable_title',
+		text: i18nHelper.getMessage('122010')
+	});
+	section.createEl('p', {
+		cls: 'obsidian_douban_variable_help',
+		text: i18nHelper.getMessage('160225')
+	});
+
+	const list = section.createDiv('obsidian_douban_user_variable_list');
+	for (const variable of USER_VARIABLES) {
+		const item = list.createDiv('obsidian_douban_user_variable_item');
+		item.createSpan({cls: 'obsidian_douban_variable_name', text: variable.name});
+		item.createEl('span', {text: i18nHelper.getMessage(variable.descriptionKey)});
+		makeVariableCopyable(item, variable.name);
+	}
+}
+
+function makeVariableCopyable(containerEl: HTMLElement, variableName: string) {
+	const templateVariable = `{{${variableName}}}`;
+	containerEl.addClass('obsidian_douban_variable_copy_target');
+	containerEl.setAttrs({
+		tabindex: '0',
+		role: 'button',
+		title: `${i18nHelper.getMessage('122011')} ${templateVariable}`,
+		'aria-label': `${i18nHelper.getMessage('122011')} ${templateVariable}`
+	});
+
+	const copyVariable = async () => {
+		try {
+			await navigator.clipboard.writeText(templateVariable);
+			new Notice(`${i18nHelper.getMessage('122012')} ${templateVariable}`);
+		} catch (error) {
+			new Notice(i18nHelper.getMessage('122013'));
+		}
+	};
+
+	containerEl.addEventListener('click', copyVariable);
+	containerEl.addEventListener('keydown', async (event: KeyboardEvent) => {
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			await copyVariable();
+		}
+	});
 }

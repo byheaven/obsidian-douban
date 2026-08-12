@@ -1,15 +1,18 @@
 import {i18nHelper} from "../../lang/helper";
 import SettingsManager from "./SettingsManager";
 import {CustomProperty} from "./model/CustomProperty";
-import {ButtonComponent, DropdownComponent, ExtraButtonComponent, Setting, TextComponent} from "obsidian";
+import {ButtonComponent, DropdownComponent, Setting, TextComponent} from "obsidian";
 import {SupportType, SupportTypeMap} from "../../constant/Constsant";
-import DoubanPlugin from "../../main";
 
 export function constructCustomPropertySettingsUI(containerEl: HTMLElement, manager: SettingsManager) {
-	// containerEl.createEl('h3', { text: i18nHelper.getMessage('1240') });
-	containerEl.createEl('p', { text: i18nHelper.getMessage('1242') });
+	const overview = containerEl.createDiv('obsidian_douban_section_card');
+	overview.createEl('p', {
+		cls: 'obsidian_douban_custom_property_intro',
+		text: i18nHelper.getMessage('1242')
+	});
 	const customProperties = manager.plugin.settings.customProperties;
-	new Setting(containerEl)
+	new Setting(overview)
+		.setClass('obsidian_douban_custom_property_header')
 		.setDesc(i18nHelper.getMessage('1241'))
 		.addButton((button) => {
 			button.setButtonText(i18nHelper.getMessage('124101'));
@@ -34,9 +37,11 @@ export function constructCustomPropertyUI(containerEl: HTMLElement, customProper
 
 
 function addFilterInput(data: CustomProperty, el: HTMLElement, customProperties: CustomProperty[] , manager: SettingsManager, idx: number) {
-	const item = el.createEl('li')
-	item.createEl('span', { text: i18nHelper.getMessage('124102') })
-	const nameField = new TextComponent(el);
+	const item = el.createDiv('obsidian_douban_custom_property_item');
+
+	const nameControl = item.createDiv('obsidian_douban_custom_property_field');
+	nameControl.createEl('label', { text: i18nHelper.getMessage('124102') });
+	const nameField = new TextComponent(nameControl);
 	nameField.setPlaceholder(i18nHelper.getMessage('124103'))
 		.setValue(data.name)
 		.onChange(async (value) => {
@@ -46,13 +51,12 @@ function addFilterInput(data: CustomProperty, el: HTMLElement, customProperties:
 			customProperties[idx].name = value;
 			await manager.plugin.saveSettings();
 		});
-	let nameEl = nameField.inputEl;
-	nameEl.addClass('obsidian_douban_settings_input')
-	item.appendChild(nameEl);
+	const nameEl = nameField.inputEl;
+	nameEl.addClass('obsidian_douban_settings_input');
 
-
-	item.createEl('span', { text: i18nHelper.getMessage('124104') })
-	const  valueField = new TextComponent(el);
+	const valueControl = item.createDiv('obsidian_douban_custom_property_field');
+	valueControl.createEl('label', { text: i18nHelper.getMessage('124104') });
+	const valueField = new TextComponent(valueControl);
 	valueField.setPlaceholder(i18nHelper.getMessage('124105'))
 		.setValue(data.value)
 		.onChange(async (value) => {
@@ -63,14 +67,14 @@ function addFilterInput(data: CustomProperty, el: HTMLElement, customProperties:
 			await manager.plugin.saveSettings();
 		});
 	const valueEl = valueField.inputEl;
-	valueEl.addClass('obsidian_douban_settings_input')
-	item.appendChild(valueEl);
+	valueEl.addClass('obsidian_douban_settings_input');
 
-	const fieldsDropdown = new DropdownComponent(el);
+	const typeControl = item.createDiv('obsidian_douban_custom_property_field');
+	typeControl.createEl('label', { text: i18nHelper.getMessage('124106') });
+	const fieldsDropdown = new DropdownComponent(typeControl);
 	for (const fieldSelect in SupportType) {
 		fieldsDropdown.addOption(fieldSelect, i18nHelper.getMessage(fieldSelect));
 	}
-	item.createEl('span', { text: i18nHelper.getMessage('124106') });
 	let dataFieldValue = data.field;
 	if(typeof dataFieldValue === 'string') {
 		// @ts-ignore
@@ -82,10 +86,10 @@ function addFilterInput(data: CustomProperty, el: HTMLElement, customProperties:
 			await manager.plugin.saveSettings();
 		});
 	const fieldSelectEl = fieldsDropdown.selectEl;
-	fieldSelectEl.addClass('obsidian_douban_settings_input')
-	item.appendChild(fieldSelectEl);
+	fieldSelectEl.addClass('obsidian_douban_settings_input');
 
-	const extractButton = new ButtonComponent(el);
+	const removeControl = item.createDiv('obsidian_douban_custom_property_remove');
+	const extractButton = new ButtonComponent(removeControl);
 	extractButton.setIcon('minus-with-circle');
 	extractButton.setTooltip(i18nHelper.getMessage('124107'));
 	extractButton.onClick(async () => {
@@ -94,7 +98,5 @@ function addFilterInput(data: CustomProperty, el: HTMLElement, customProperties:
 		await manager.plugin.saveSettings();
 	});
 	const extractButtonEl = extractButton.buttonEl;
-	extractButtonEl.addClass('obsidian_douban_settings_button')
-	item.appendChild(extractButtonEl);
-	// item.appendChild(extractButton.extraSettingsEl);
+	extractButtonEl.addClass('obsidian_douban_settings_button');
 }

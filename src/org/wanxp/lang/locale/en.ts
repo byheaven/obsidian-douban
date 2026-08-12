@@ -152,7 +152,7 @@ PS: This file could be delete if you want to.
 	'1220': `Output`,
 	'1230': `Description`,
 	'1260': `Login`,
-	'1270': `Array Limit`,
+	'1270': `Array Length Control`,
 	'1271': `Limit the maximum number of items for array fields (such as actor, director, author, translator, aliases, ...) in subjects (movie / teleplay / book / music / game / ...). Items beyond the limit will not be written to the note.`,
 	'1272': `Tip: When the "Apply Type" is "all", the limit applies to matching fields across all subject types. Type-specific limits take precedence when both exist for the same field.`,
 	'1273': `Add a limit, e.g. keep only the first 5 actors of a movie.`,
@@ -406,8 +406,12 @@ PS: This file could be delete if you want to.
 	'122001': `Basic Variables`,
 	'122002': `Extra Variables`,
 	'122003': `Basic Variables must has value, Extra Variables can be empty`,
-	'122004': `To use the template variables, you need to wrap them in double curly brackets. For example, {{title}} will be replaced with the title of the note.`,
+	'122004': `Wrap template variables in double curly brackets, for example {{title}}. Click a variable-name cell to copy the complete template variable.`,
+	'122005': `Extra variables vary by content type. Highlighted text is the variable name; click its cell to copy the complete template variable.`,
 	'122010': `My State Variables`,
+	'122011': `Click to copy`,
+	'122012': `Copied`,
+	'122013': `Copy failed. Please try again.`,
 
 
 

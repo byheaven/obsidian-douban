@@ -114,7 +114,6 @@ function scoreSettingDisplay(containerEl: HTMLElement, manager: SettingsManager)
 export function constructOutUI(containerEl: HTMLElement, manager: SettingsManager) {
 	// containerEl.createEl('h3', { text: i18nHelper.getMessage('1220') });
 
-	new Setting(containerEl);
 	const attachmentFileSetting = containerEl.createDiv({ cls: 'settings-item-attachment' });
 	constructAttachmentFileSettingsUI(attachmentFileSetting, manager);
 
