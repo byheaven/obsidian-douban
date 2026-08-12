@@ -154,12 +154,7 @@ export function constructLoginCookieSettingsUI(containerEl: HTMLElement, parentC
 
 export function constructHasLoginSettingsUI(containerEl: HTMLElement, manager: SettingsManager) {
 	const user: User = manager.plugin.userComponent.getUser();
-	let userDom = new DocumentFragment();
-	userDom.createDiv().innerHTML =
-		`${i18nHelper.getMessage('100120')}<br>
-${i18nHelper.getMessage('100123')}: <a href="https://www.douban.com/people/${user.id}/">${user.id}</a><br>
-		${i18nHelper.getMessage('100124')}: ${user.name}<br>
-${i18nHelper.getMessage('100125')}`;
+	const userDom = createLoggedInUserDescription(user);
 	manager.debug(`配置界面:展示豆瓣登录信息:id:${StringUtil.confuse(user.id)}, 用户名:${StringUtil.confuse(user.name)}`)
 	new Setting(containerEl)
 		.setName(i18nHelper.getMessage('100126'))
@@ -211,12 +206,7 @@ function showMobileLogin(containerEl: HTMLElement, manager: SettingsManager) {
 
 function showMobileLogout(containerEl: HTMLElement, manager: SettingsManager) {
 	const user: User = manager.plugin.userComponent.getUser();
-	let userDom = new DocumentFragment();
-	userDom.createDiv().innerHTML =
-		`${i18nHelper.getMessage('100120')}<br>
-${i18nHelper.getMessage('100123')}: <a href="https://www.douban.com/people/${user.id}/">${user.id}</a><br>
-		${i18nHelper.getMessage('100124')}: ${user.name}<br>
-${i18nHelper.getMessage('100125')}`;
+	const userDom = createLoggedInUserDescription(user);
 	new Setting(containerEl)
 		.setName(i18nHelper.getMessage('100126'))
 		.setDesc(userDom)
@@ -229,5 +219,42 @@ ${i18nHelper.getMessage('100125')}`;
 					await manager.plugin.userComponent.logout();
 					constructDoubanTokenSettingsUI(containerEl, manager);
 				});
-		});
+			});
+}
+
+function createLoggedInUserDescription(user: User): DocumentFragment {
+	const fragment = new DocumentFragment();
+	const userInfo = fragment.createDiv('obsidian_douban_login_user_info');
+	userInfo.createDiv({
+		cls: 'obsidian_douban_login_status',
+		text: i18nHelper.getMessage('100120')
+	});
+
+	const idRow = userInfo.createDiv('obsidian_douban_login_detail');
+	idRow.createSpan({
+		cls: 'obsidian_douban_login_label',
+		text: `${i18nHelper.getMessage('100123')}:`
+	});
+	idRow.createEl('a', {
+		cls: 'obsidian_douban_login_value',
+		text: String(user.id || ''),
+		href: `https://www.douban.com/people/${encodeURIComponent(String(user.id || ''))}/`,
+		attr: {target: '_blank', rel: 'noopener noreferrer'}
+	});
+
+	const nameRow = userInfo.createDiv('obsidian_douban_login_detail');
+	nameRow.createSpan({
+		cls: 'obsidian_douban_login_label',
+		text: `${i18nHelper.getMessage('100124')}:`
+	});
+	nameRow.createSpan({
+		cls: 'obsidian_douban_login_value',
+		text: String(user.name || '')
+	});
+
+	userInfo.createDiv({
+		cls: 'obsidian_douban_login_note',
+		text: i18nHelper.getMessage('100125')
+	});
+	return fragment;
 }

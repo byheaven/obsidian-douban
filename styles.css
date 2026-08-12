@@ -73,6 +73,48 @@
 	color: var(--text-error);
 }
 
+.obsidian_douban_login_status {
+	display: inline-flex;
+	align-items: center;
+	margin-bottom: 8px;
+	padding: 3px 9px;
+	color: var(--text-success, #2f9e44);
+	background: rgba(74, 180, 105, 0.16);
+	border: 1px solid rgba(74, 180, 105, 0.3);
+	border-radius: 999px;
+	font-size: var(--font-ui-small);
+	font-weight: var(--font-semibold);
+}
+
+.obsidian_douban_login_detail {
+	display: flex;
+	gap: 6px;
+	align-items: baseline;
+	margin: 4px 0;
+	line-height: 1.5;
+}
+
+.obsidian_douban_login_label {
+	color: var(--text-muted);
+}
+
+.obsidian_douban_login_value {
+	color: var(--text-accent);
+	font-weight: var(--font-semibold);
+	overflow-wrap: anywhere;
+}
+
+a.obsidian_douban_login_value:hover {
+	color: var(--text-accent-hover);
+	text-decoration: underline;
+}
+
+.obsidian_douban_login_note {
+	margin-top: 8px;
+	color: var(--text-muted);
+	line-height: 1.5;
+}
+
 .obsidian_douban_qr_controls {
 	display: flex;
 	gap: 8px;
