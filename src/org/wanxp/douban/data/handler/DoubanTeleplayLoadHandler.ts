@@ -10,6 +10,7 @@ import {UserStateSubject} from "../model/UserStateSubject";
 import {moment} from "obsidian";
 import {TITLE_ALIASES_SPECIAL_CHAR_REG_G} from "../../../utils/YamlUtil";
 import {DataField} from "../../../utils/model/DataField";
+import DoubanPageParser from "../../../utils/DoubanPageParser";
 
 /**
  * teleplay
@@ -65,13 +66,11 @@ export class DoubanTeleplayLoadHandler extends DoubanAbstractLoadHandler<DoubanT
 
 	analysisUser(html: CheerioAPI, context: HandleContext): {data:CheerioAPI ,  userState: UserStateSubject} {
 		const rate = html('input#n_rating').val();
-		const rating = html('span#rating');
-		const tagsStr = rating.next().next().text().trim();
-		const tags = tagsStr ? tagsStr.replace('标签:', '').trim().split(' ') : null;
+		const tags = DoubanPageParser.parseUserTags(html);
 		const stateWord = html('div#interest_sect_level > div.a_stars > span.mr10').text().trim();
 		const collectionDateStr = html('div#interest_sect_level > div.a_stars > span.mr10 > span.collection_date').text().trim();
 		const userState1 = DoubanAbstractLoadHandler.getUserState(stateWord);
-		const component = rating.next().next().next().next().text().trim();
+		const component = DoubanPageParser.parseUserComment(html);
 
 		const userState: UserStateSubject = {
 			tags: tags,
@@ -166,7 +165,12 @@ export class DoubanTeleplayLoadHandler extends DoubanAbstractLoadHandler<DoubanT
 
 		this.handlePersonNameByMeta(html, teleplay,  context, 'video:actor', 'actor');
 		this.handlePersonNameByMeta(html, teleplay,  context, 'video:director', 'director');
-		const desc:string = html("span[property='v:summary']").text();
+		const desc:string = DoubanPageParser.extractText(html, [
+			"[id^='link-report'] > span.all.hidden",
+			"#link-report .all.hidden p",
+			"#link-report span.all.hidden",
+			"span[property='v:summary']",
+		]);
 		if (desc) {
 			teleplay.desc = desc;
 		}

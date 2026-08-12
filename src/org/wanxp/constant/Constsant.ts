@@ -98,6 +98,7 @@ export enum TemplateKey {
 	noteTemplateFile = 'noteTemplateFile',
 	gameTemplateFile = 'gameTemplateFile',
 	teleplayTemplateFile = 'teleplayTemplateFile',
+	theaterTemplateFile = 'theaterTemplateFile',
 }
 
 export enum SupportType {
@@ -201,24 +202,43 @@ export enum PropertyName {
  * 名称模式选项
  */
 // @ts-ignore
-export const SearchTypeRecords: { [key in SupportType]: string } = {
-	[SupportType.all]: i18nHelper.getMessage('ALL'),
-	[SupportType.movie]: i18nHelper.getMessage('MOVIE_AND_TELEPLAY'),
-	[SupportType.book]: i18nHelper.getMessage('BOOK'),
-	[SupportType.music]: i18nHelper.getMessage('MUSIC'),
-	[SupportType.note]: i18nHelper.getMessage('NOTE'),
-	[SupportType.game]: i18nHelper.getMessage('GAME'),
-	[SupportType.theater]: i18nHelper.getMessage('THEATER'),
+function dynamicI18nRecord(entries: Record<string, string>): Record<string, string> {
+	const result: Record<string, string> = {};
+	Object.entries(entries).forEach(([key, messageKey]) => {
+		Object.defineProperty(result, key, {
+			enumerable: true,
+			get: () => i18nHelper.getMessage(messageKey),
+		});
+	});
+	return result;
 }
+
+function dynamicSubjectTitle<T extends {title: string}>(subject: T, messageKey: string): T {
+	Object.defineProperty(subject, 'title', {
+		enumerable: true,
+		get: () => i18nHelper.getMessage(messageKey),
+	});
+	return subject;
+}
+
+export const SearchTypeRecords: { [key in SupportType]: string } = dynamicI18nRecord({
+	[SupportType.all]: 'ALL',
+	[SupportType.movie]: 'MOVIE_AND_TELEPLAY',
+	[SupportType.book]: 'BOOK',
+	[SupportType.music]: 'MUSIC',
+	[SupportType.note]: 'NOTE',
+	[SupportType.game]: 'GAME',
+	[SupportType.theater]: 'THEATER',
+}) as { [key in SupportType]: string };
 
 /**
  * 名称模式选项
  */
-export const PersonNameModeRecords: { [key in PersonNameMode]: string } = {
-	[PersonNameMode.CH_NAME]: i18nHelper.getMessage('121206'),
-	[PersonNameMode.EN_NAME]: i18nHelper.getMessage('121207'),
-	[PersonNameMode.CH_EN_NAME]: i18nHelper.getMessage('121208'),
-}
+export const PersonNameModeRecords: { [key in PersonNameMode]: string } = dynamicI18nRecord({
+	[PersonNameMode.CH_NAME]: '121206',
+	[PersonNameMode.EN_NAME]: '121207',
+	[PersonNameMode.CH_EN_NAME]: '121208',
+}) as { [key in PersonNameMode]: string };
 
 export enum SyncType {
 	movie = 'movie',
@@ -245,15 +265,15 @@ export const SyncTypeUrlDomain: Map<SyncType, string> = new Map([
  * 同步模式选项
  */
 // @ts-ignore
-export const SyncTypeRecords: { [key in SyncType | string]: string } = {
-	[SyncType.movie]: i18nHelper.getMessage('504103'),
-	[SyncType.teleplay]: i18nHelper.getMessage('504107'),
-	[SyncType.book]: i18nHelper.getMessage('504102'),
+export const SyncTypeRecords: { [key in SyncType | string]: string } = dynamicI18nRecord({
+	[SyncType.movie]: '504103',
+	[SyncType.teleplay]: '504107',
+	[SyncType.book]: '504102',
 	// [SyncType.broadcast]: i18nHelper.getMessage('504104'),
 	// [SyncType.note]: i18nHelper.getMessage('504105'),
-	[SyncType.music]: i18nHelper.getMessage('504106'),
-	[SyncType.game]: i18nHelper.getMessage('504108'),
-}
+	[SyncType.music]: '504106',
+	[SyncType.game]: '504108',
+});
 
 /**
  * 同步豆瓣每页的大小
@@ -291,7 +311,7 @@ export enum NavigateType {
 	nextNeedLogin = "nextNeedLogin"
 }
 
-export const DoubanSearchResultSubjectPreviousPage: DoubanSearchResultSubject = {
+export const DoubanSearchResultSubjectPreviousPage: DoubanSearchResultSubject = dynamicSubjectTitle({
 	cast: "",
 	datePublished: undefined,
 	desc: "",
@@ -301,12 +321,12 @@ export const DoubanSearchResultSubjectPreviousPage: DoubanSearchResultSubject = 
 	imageUrl: "",
 	publisher: "",
 	score: 0,
-	title: i18nHelper.getMessage("150102"),
+	title: "",
 	type: "navigate",
 	url: NavigateType.previous
-}
+}, "150102");
 
-export const DoubanSearchGroupPublishResultSubjectPreviousPage: DoubanSearchResultSubject = {
+export const DoubanSearchGroupPublishResultSubjectPreviousPage: DoubanSearchResultSubject = dynamicSubjectTitle({
 	cast: "",
 	datePublished: undefined,
 	desc: "",
@@ -316,12 +336,12 @@ export const DoubanSearchGroupPublishResultSubjectPreviousPage: DoubanSearchResu
 	imageUrl: "",
 	publisher: "",
 	score: 0,
-	title: i18nHelper.getMessage("150106"),
+	title: "",
 	type: "navigate",
 	url: NavigateType.previous
-}
+}, "150106");
 
-export const DoubanSearchGroupPublishResultSubjectNextPage: DoubanSearchResultSubject = {
+export const DoubanSearchGroupPublishResultSubjectNextPage: DoubanSearchResultSubject = dynamicSubjectTitle({
 	cast: "",
 	datePublished: undefined,
 	desc: "",
@@ -331,12 +351,12 @@ export const DoubanSearchGroupPublishResultSubjectNextPage: DoubanSearchResultSu
 	imageUrl: "",
 	publisher: "",
 	score: 0,
-	title: i18nHelper.getMessage("150105"),
+	title: "",
 	type: "navigate",
 	url: NavigateType.next
-}
+}, "150105");
 
-export const DoubanSearchResultSubjectNextPage: DoubanSearchResultSubject = {
+export const DoubanSearchResultSubjectNextPage: DoubanSearchResultSubject = dynamicSubjectTitle({
 	cast: "",
 	datePublished: undefined,
 	desc: "",
@@ -346,12 +366,12 @@ export const DoubanSearchResultSubjectNextPage: DoubanSearchResultSubject = {
 	imageUrl: "",
 	publisher: "",
 	score: 0,
-	title: i18nHelper.getMessage("150103"),
+	title: "",
 	type: "navigate",
 	url: NavigateType.next
-}
+}, "150103");
 
-export const DoubanSearchResultSubjectNextPageNeedLogin: DoubanSearchResultSubject = {
+export const DoubanSearchResultSubjectNextPageNeedLogin: DoubanSearchResultSubject = dynamicSubjectTitle({
 	cast: "",
 	datePublished: undefined,
 	desc: "",
@@ -361,10 +381,10 @@ export const DoubanSearchResultSubjectNextPageNeedLogin: DoubanSearchResultSubje
 	imageUrl: "",
 	publisher: "",
 	score: 0,
-	title: i18nHelper.getMessage("150104"),
+	title: "",
 	type: "navigate",
 	url: NavigateType.nextNeedLogin
-}
+}, "150104");
 
 export const SEARCH_ITEM_PAGE_SIZE: number = 20;
 
@@ -509,19 +529,19 @@ export enum SyncConditionType {
  * 名称模式选项
  */
 // @ts-ignore
-export const SyncConditionTypeRecords: { [key in SyncConditionType|string]: string } = {
-	[SyncConditionType.ALL]: i18nHelper.getMessage('110071'),
+export const SyncConditionTypeRecords: { [key in SyncConditionType|string]: string } = dynamicI18nRecord({
+	[SyncConditionType.ALL]: '110071',
 	// [SyncConditionType.LAST_UPDATE]: i18nHelper.getMessage('110072'),
-	[SyncConditionType.LAST_THIRTY]: i18nHelper.getMessage('110075'),
-	[SyncConditionType.CUSTOM_ITEM]: i18nHelper.getMessage('110076'),
-	[SyncConditionType.CUSTOM_TIME]: i18nHelper.getMessage('110074'),
+	[SyncConditionType.LAST_THIRTY]: '110075',
+	[SyncConditionType.CUSTOM_ITEM]: '110076',
+	[SyncConditionType.CUSTOM_TIME]: '110074',
 
-}
+});
 
 
-export const DoubanSearchResultSubject_EMPTY: DoubanSearchResultSubject = {
+export const DoubanSearchResultSubject_EMPTY: DoubanSearchResultSubject = dynamicSubjectTitle({
 	id: '',
-	title: i18nHelper.getMessage('150107'),
+	title: '',
 	score: null,
 	cast: '',
 	type: 'navigate',
@@ -532,11 +552,11 @@ export const DoubanSearchResultSubject_EMPTY: DoubanSearchResultSubject = {
 	publisher: "",
 	datePublished: undefined,
 	genre: []
-};
+}, '150107');
 
-export const DoubanSearchResultSubject_TIP_EMPTY: DoubanSearchResultSubject = {
+export const DoubanSearchResultSubject_TIP_EMPTY: DoubanSearchResultSubject = dynamicSubjectTitle({
 	id: '',
-	title: i18nHelper.getMessage('150108'),
+	title: '',
 	score: null,
 	cast: '',
 	type: 'navigate',
@@ -547,4 +567,4 @@ export const DoubanSearchResultSubject_TIP_EMPTY: DoubanSearchResultSubject = {
 	publisher: "",
 	datePublished: undefined,
 	genre: []
-};
+}, '150108');

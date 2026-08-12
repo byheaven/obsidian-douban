@@ -212,6 +212,7 @@ export default class SettingsManager {
 		this.settings.noteTemplateFile = DEFAULT_SETTINGS.noteTemplateFile;
 		this.settings.gameTemplateFile = DEFAULT_SETTINGS.gameTemplateFile;
 		this.settings.teleplayTemplateFile = DEFAULT_SETTINGS.teleplayTemplateFile;
+		this.settings.theaterTemplateFile = DEFAULT_SETTINGS.theaterTemplateFile;
 		this.settings.dateFormat = DEFAULT_SETTINGS.dateFormat;
 		this.settings.timeFormat = DEFAULT_SETTINGS.timeFormat;
 		this.settings.searchUrl = DEFAULT_SETTINGS.searchUrl;
@@ -222,6 +223,7 @@ export default class SettingsManager {
 		this.settings.debugMode = DEFAULT_SETTINGS.debugMode;
 		this.settings.cacheImage = DEFAULT_SETTINGS.cacheImage;
 		this.settings.cacheHighQuantityImage = DEFAULT_SETTINGS.cacheHighQuantityImage;
+		this.settings.showAfterCreate = DEFAULT_SETTINGS.showAfterCreate;
 	}
 
 	clearLoginInfo() {

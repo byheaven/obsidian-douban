@@ -129,6 +129,16 @@ export function constructOutUI(containerEl: HTMLElement, manager: SettingsManage
 
 	constructOutputFileNameUI(outFolder, filePathDisplayExample, manager);
 
+	new Setting(containerEl)
+		.setName(i18nHelper.getMessage('showAfterCreateName'))
+		.setDesc(i18nHelper.getMessage('showAfterCreateDesc'))
+		.addToggle(toggle => toggle
+			.setValue(manager.plugin.settings.showAfterCreate)
+			.onChange(async value => {
+				manager.plugin.settings.showAfterCreate = value;
+				await manager.plugin.saveSettings();
+			}));
+
 
 	new Setting(containerEl).setName(i18nHelper.getMessage('121201')).then((setting) => {
 		setting.addDropdown((dropdwon) => {

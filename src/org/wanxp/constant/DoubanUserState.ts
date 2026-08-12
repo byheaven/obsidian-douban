@@ -8,62 +8,73 @@ export enum DoubanSubjectState {
 	collect = 'collect',
 }
 
-export const DoubanSubjectStateRecords_ALL: { [key in DoubanSubjectState]: string } = {
-	[DoubanSubjectState.not]: i18nHelper.getMessage('500101'),
-	[DoubanSubjectState.wish]: i18nHelper.getMessage('500102'),
-	[DoubanSubjectState.do]: i18nHelper.getMessage('500103'),
-	[DoubanSubjectState.collect]: i18nHelper.getMessage('500104'),
+function dynamicStateRecord(entries: Record<string, string>): Record<string, string> {
+	const result: Record<string, string> = {};
+	Object.entries(entries).forEach(([key, messageKey]) => {
+		Object.defineProperty(result, key, {
+			enumerable: true,
+			get: () => i18nHelper.getMessage(messageKey),
+		});
+	});
+	return result;
 }
 
-export const DoubanSubjectStateRecords_MOVIE: { [key in DoubanSubjectState]: string } = {
-	[DoubanSubjectState.not]: i18nHelper.getMessage('500201'),
-	[DoubanSubjectState.wish]: i18nHelper.getMessage('500202'),
-	[DoubanSubjectState.do]: i18nHelper.getMessage('500203'),
-	[DoubanSubjectState.collect]: i18nHelper.getMessage('500204'),
-}
+export const DoubanSubjectStateRecords_ALL = dynamicStateRecord({
+	[DoubanSubjectState.not]: '500101',
+	[DoubanSubjectState.wish]: '500102',
+	[DoubanSubjectState.do]: '500103',
+	[DoubanSubjectState.collect]: '500104',
+}) as { [key in DoubanSubjectState]: string };
 
-export const DoubanSubjectStateRecords_BOOK: { [key in DoubanSubjectState]: string } = {
-	[DoubanSubjectState.not]: i18nHelper.getMessage('500301'),
-	[DoubanSubjectState.wish]: i18nHelper.getMessage('500302'),
-	[DoubanSubjectState.do]: i18nHelper.getMessage('500303'),
-	[DoubanSubjectState.collect]: i18nHelper.getMessage('500304'),
-}
+export const DoubanSubjectStateRecords_MOVIE = dynamicStateRecord({
+	[DoubanSubjectState.not]: '500201',
+	[DoubanSubjectState.wish]: '500202',
+	[DoubanSubjectState.do]: '500203',
+	[DoubanSubjectState.collect]: '500204',
+}) as { [key in DoubanSubjectState]: string };
+
+export const DoubanSubjectStateRecords_BOOK = dynamicStateRecord({
+	[DoubanSubjectState.not]: '500301',
+	[DoubanSubjectState.wish]: '500302',
+	[DoubanSubjectState.do]: '500303',
+	[DoubanSubjectState.collect]: '500304',
+}) as { [key in DoubanSubjectState]: string };
 
 
-export const DoubanSubjectStateRecords_MUSIC: { [key in DoubanSubjectState]: string } = {
-	[DoubanSubjectState.not]: i18nHelper.getMessage('500401'),
-	[DoubanSubjectState.wish]: i18nHelper.getMessage('500402'),
-	[DoubanSubjectState.do]: i18nHelper.getMessage('500403'),
-	[DoubanSubjectState.collect]: i18nHelper.getMessage('500404'),
-}
+export const DoubanSubjectStateRecords_MUSIC = dynamicStateRecord({
+	[DoubanSubjectState.not]: '500401',
+	[DoubanSubjectState.wish]: '500402',
+	[DoubanSubjectState.do]: '500403',
+	[DoubanSubjectState.collect]: '500404',
+}) as { [key in DoubanSubjectState]: string };
 
-export const DoubanSubjectStateRecords_NOTE: { [key in DoubanSubjectState]: string } = {
-	[DoubanSubjectState.not]: i18nHelper.getMessage('500501'),
-	[DoubanSubjectState.wish]: i18nHelper.getMessage('500502'),
-	[DoubanSubjectState.do]: i18nHelper.getMessage('500503'),
-	[DoubanSubjectState.collect]: i18nHelper.getMessage('500504'),
-}
+export const DoubanSubjectStateRecords_NOTE = dynamicStateRecord({
+	[DoubanSubjectState.not]: '500501',
+	[DoubanSubjectState.wish]: '500502',
+	[DoubanSubjectState.do]: '500503',
+	[DoubanSubjectState.collect]: '500504',
+}) as { [key in DoubanSubjectState]: string };
 
-export const DoubanSubjectStateRecords_GAME: { [key in DoubanSubjectState]: string } = {
-	[DoubanSubjectState.not]: i18nHelper.getMessage('500601'),
-	[DoubanSubjectState.wish]: i18nHelper.getMessage('500602'),
-	[DoubanSubjectState.do]: i18nHelper.getMessage('500603'),
-	[DoubanSubjectState.collect]: i18nHelper.getMessage('500604'),
-}
+export const DoubanSubjectStateRecords_GAME = dynamicStateRecord({
+	[DoubanSubjectState.not]: '500601',
+	[DoubanSubjectState.wish]: '500602',
+	[DoubanSubjectState.do]: '500603',
+	[DoubanSubjectState.collect]: '500604',
+}) as { [key in DoubanSubjectState]: string };
 
-export const DoubanSubjectStateRecords_TELEPLAY: { [key in DoubanSubjectState]: string } = {
-	[DoubanSubjectState.not]: i18nHelper.getMessage('500701'),
-	[DoubanSubjectState.wish]: i18nHelper.getMessage('500702'),
-	[DoubanSubjectState.do]: i18nHelper.getMessage('500703'),
-	[DoubanSubjectState.collect]: i18nHelper.getMessage('500704'),
-}
+export const DoubanSubjectStateRecords_TELEPLAY = dynamicStateRecord({
+	[DoubanSubjectState.not]: '500701',
+	[DoubanSubjectState.wish]: '500702',
+	[DoubanSubjectState.do]: '500703',
+	[DoubanSubjectState.collect]: '500704',
+}) as { [key in DoubanSubjectState]: string };
 
-export const DoubanSubjectStateRecords_THEATER: { [key in DoubanSubjectState]: string } = {
-	[DoubanSubjectState.not]: i18nHelper.getMessage('500701'),
-	[DoubanSubjectState.wish]: i18nHelper.getMessage('500702'),
-	[DoubanSubjectState.do]: i18nHelper.getMessage('500703'),
-	[DoubanSubjectState.collect]: i18nHelper.getMessage('500704'),
-}
+export const DoubanSubjectStateRecords_THEATER = dynamicStateRecord({
+	[DoubanSubjectState.not]: '500701',
+	[DoubanSubjectState.wish]: '500702',
+	[DoubanSubjectState.do]: '500703',
+	[DoubanSubjectState.collect]: '500704',
+}) as { [key in DoubanSubjectState]: string };
 
 export const DoubanSubjectStateRecords: { [key in SupportType]: Record<DoubanSubjectState, string> } = {
 	[SupportType.all]:DoubanSubjectStateRecords_ALL,
@@ -80,57 +91,53 @@ export const DoubanSubjectStateRecords: { [key in SupportType]: Record<DoubanSub
 export const ALL:string = 'ALL';
 
 // @ts-ignore
-export const DoubanSubjectStateRecords_MOVIE_SYNC: { [key in DoubanSubjectState]: string } = {
+export const DoubanSubjectStateRecords_MOVIE_SYNC = dynamicStateRecord({
 	// @ts-ignore
-	[ALL]: i18nHelper.getMessage('500004'),
-	[DoubanSubjectState.wish]: i18nHelper.getMessage('500202'),
-	[DoubanSubjectState.do]: i18nHelper.getMessage('500203'),
-	[DoubanSubjectState.collect]: i18nHelper.getMessage('500204'),
-}
+	[ALL]: '500004',
+	[DoubanSubjectState.wish]: '500202',
+	[DoubanSubjectState.do]: '500203',
+	[DoubanSubjectState.collect]: '500204',
+});
 
 // @ts-ignore
-export const DoubanSubjectStateRecords_TELEPLAY_SYNC: { [key in DoubanSubjectState]: string } = {
+export const DoubanSubjectStateRecords_TELEPLAY_SYNC = dynamicStateRecord({
 	// @ts-ignore
-	[ALL]: i18nHelper.getMessage('500004'),
-	[DoubanSubjectState.wish]: i18nHelper.getMessage('500202'),
-	[DoubanSubjectState.do]: i18nHelper.getMessage('500203'),
-	[DoubanSubjectState.collect]: i18nHelper.getMessage('500204'),
-}
+	[ALL]: '500004',
+	[DoubanSubjectState.wish]: '500202',
+	[DoubanSubjectState.do]: '500203',
+	[DoubanSubjectState.collect]: '500204',
+});
 
 // @ts-ignore
-export const DoubanSubjectStateRecords_BOOK_SYNC: { [key in DoubanSubjectState]: string } = {
+export const DoubanSubjectStateRecords_BOOK_SYNC = dynamicStateRecord({
 	// @ts-ignore
-	[ALL]: i18nHelper.getMessage('500004'),
-	[DoubanSubjectState.wish]: i18nHelper.getMessage('500302'),
-	[DoubanSubjectState.do]: i18nHelper.getMessage('500303'),
-	[DoubanSubjectState.collect]: i18nHelper.getMessage('500304'),
-}
+	[ALL]: '500004',
+	[DoubanSubjectState.wish]: '500302',
+	[DoubanSubjectState.do]: '500303',
+	[DoubanSubjectState.collect]: '500304',
+});
 
 // @ts-ignore
-export const DoubanSubjectStateRecords_GAME_SYNC: { [key in DoubanSubjectState]: string } = {
+export const DoubanSubjectStateRecords_GAME_SYNC = dynamicStateRecord({
 	// @ts-ignore
 	// [ALL]: i18nHelper.getMessage('500004'),
-	[DoubanSubjectState.wish]: i18nHelper.getMessage('500602'),
-	[DoubanSubjectState.do]: i18nHelper.getMessage('500603'),
-	[DoubanSubjectState.collect]: i18nHelper.getMessage('500604'),
-}
+	[DoubanSubjectState.wish]: '500602',
+	[DoubanSubjectState.do]: '500603',
+	[DoubanSubjectState.collect]: '500604',
+});
 
-export const DoubanSubjectStateRecords_BROADCAST_SYNC: { [key :string]: string } = {
-	[ALL]: i18nHelper.getMessage('500004'),
-}
+export const DoubanSubjectStateRecords_BROADCAST_SYNC = dynamicStateRecord({[ALL]: '500004'});
 
-export const DoubanSubjectStateRecords_NOTE_SYNC: { [key :string]: string } = {
-	[ALL]: i18nHelper.getMessage('500004'),
-}
+export const DoubanSubjectStateRecords_NOTE_SYNC = dynamicStateRecord({[ALL]: '500004'});
 
 // @ts-ignore
-export const DoubanSubjectStateRecords_MUSIC_SYNC: { [key in DoubanSubjectState]: string } = {
+export const DoubanSubjectStateRecords_MUSIC_SYNC = dynamicStateRecord({
 	// @ts-ignore
-	[ALL]: i18nHelper.getMessage('500004'),
-	[DoubanSubjectState.wish]: i18nHelper.getMessage('500402'),
-	[DoubanSubjectState.do]: i18nHelper.getMessage('500403'),
-	[DoubanSubjectState.collect]: i18nHelper.getMessage('500404'),
-}
+	[ALL]: '500004',
+	[DoubanSubjectState.wish]: '500402',
+	[DoubanSubjectState.do]: '500403',
+	[DoubanSubjectState.collect]: '500404',
+});
 
 // @ts-ignore
 export const DoubanSubjectStateRecords_SYNC: { [key in SyncType]: Record<DoubanSubjectState, string> } = {
@@ -178,7 +185,6 @@ export const DoubanSubjectStateRecords_KEY_WORD_TYPE: Map<string, SupportType> =
 		['我想看这部电影', SupportType.movie],
 	]
 )
-
 
 
 

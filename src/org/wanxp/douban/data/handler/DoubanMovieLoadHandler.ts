@@ -11,6 +11,7 @@ import {UserStateSubject} from "../model/UserStateSubject";
 import {moment} from "obsidian";
 import YamlUtil, {SPECIAL_CHAR_REG, TITLE_ALIASES_SPECIAL_CHAR_REG_G} from "../../../utils/YamlUtil";
 import {DataField} from "../../../utils/model/DataField";
+import DoubanPageParser from "../../../utils/DoubanPageParser";
 
 export default class DoubanMovieLoadHandler extends DoubanAbstractLoadHandler<DoubanMovieSubject> {
 
@@ -70,8 +71,7 @@ export default class DoubanMovieLoadHandler extends DoubanAbstractLoadHandler<Do
 
 	analysisUser(html: CheerioAPI, context: HandleContext): {data:CheerioAPI ,  userState: UserStateSubject} {
 		let rate = html('input#n_rating').val();
-		let tagsStr = html('div#interest_sect_level > div.a_stars > span.color_gray').text().trim();
-		let tags = tagsStr ? tagsStr.replace('标签:', '').trim().split(' ') : null;
+		let tags = DoubanPageParser.parseUserTags(html);
 		let stateWord = html('div#interest_sect_level > div.a_stars > span.mr10').text().trim();
 		let collectionDateStr = html('div#interest_sect_level > div.a_stars > span.mr10 > span.collection_date').text().trim();
 		let userState1 = DoubanAbstractLoadHandler.getUserState(stateWord);
@@ -90,11 +90,10 @@ export default class DoubanMovieLoadHandler extends DoubanAbstractLoadHandler<Do
 
 
 	private getComment(html: CheerioAPI, context: HandleContext) {
-		const component = html('div#interest_sect_level > div.a_stars > span.color_gray').next().next().text().trim();
-		if (component) {
-			return component;
-		}
-		return this.getPropertyValue(html, PropertyName.comment);
+		return DoubanPageParser.parseUserComment(
+			html,
+			this.doubanPlugin.settingsManager.getSelector(this.getSupportType(), PropertyName.comment),
+		);
 	}
 
 	parseSubjectFromHtml(html: CheerioAPI, context: HandleContext): DoubanMovieSubject {
@@ -114,7 +113,7 @@ export default class DoubanMovieLoadHandler extends DoubanAbstractLoadHandler<Do
 				const result: DoubanMovieSubject = {
 					id: id ? id[0] : '',
 					title: title,
-					type: this.getSupportType(),
+					type: obj['@type'] === 'TVSeries' ? SupportType.teleplay : this.getSupportType(),
 					score: obj.aggregateRating ? obj.aggregateRating.ratingValue : undefined,
 					originalTitle: originalTitle,
 					desc: obj.description,
@@ -153,10 +152,12 @@ export default class DoubanMovieLoadHandler extends DoubanAbstractLoadHandler<Do
 			const scoreText = html("#interest_sectl strong[property='v:average']").text();
 			const score = scoreText ? parseFloat(scoreText) : undefined;
 
+			const isTeleplay = html("#info span.pl").get()
+				.some(element => /集数|单集片长/.test(html(element).text()));
 			movie = {
 				id,
 				title,
-				type: this.getSupportType(),
+				type: isTeleplay ? SupportType.teleplay : this.getSupportType(),
 				score,
 				originalTitle: title,
 				desc,
@@ -181,7 +182,12 @@ export default class DoubanMovieLoadHandler extends DoubanAbstractLoadHandler<Do
 		this.handlePersonNameByMeta(html, movie, context, 'video:actor', 'actor');
 		this.handlePersonNameByMeta(html, movie, context, 'video:director', 'director');
 
-		const desc: string = html("span[property='v:summary']").text();
+		const desc: string = DoubanPageParser.extractText(html, [
+			"[id^='link-report'] > span.all.hidden",
+			"#link-report .all.hidden p",
+			"#link-report span.all.hidden",
+			"span[property='v:summary']",
+		]);
 		if (desc) {
 			movie.desc = desc;
 		}
@@ -209,6 +215,9 @@ export default class DoubanMovieLoadHandler extends DoubanAbstractLoadHandler<Do
 		movie.country = valueMap.has('country') ? valueMap.get('country') : [];
 		movie.language = valueMap.has('language') ? valueMap.get('language') : [];
 		movie.time = valueMap.has('time') ? valueMap.get('time') : "";
+		if (movie.type === SupportType.teleplay) {
+			(movie as DoubanMovieSubject & {episode?: string}).episode = valueMap.has('episode') ? valueMap.get('episode') : "";
+		}
 		movie.aliases = valueMap.has('aliases') ? valueMap.get('aliases') : [];
 		movie.IMDb = valueMap.has('IMDb') ? valueMap.get('IMDb') : "";
 		return movie;
@@ -221,6 +230,8 @@ const MovieKeyValueMap: Map<string, string> = new Map(
 	[['制片国家/地区:', 'country'],
 		['语言:', 'language'],
 		['片长:', 'time'],
+		['集数:', 'episode'],
+		['单集片长:', 'time'],
 		['又名:', 'aliases'],
 		['IMDb:', 'IMDb']
 	]

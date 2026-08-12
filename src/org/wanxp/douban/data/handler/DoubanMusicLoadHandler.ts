@@ -8,6 +8,7 @@ import {SupportType} from "../../../constant/Constsant";
 import {UserStateSubject} from "../model/UserStateSubject";
 import {moment} from "obsidian";
 import {DataField} from "../../../utils/model/DataField";
+import DoubanPageParser from "../../../utils/DoubanPageParser";
 
 export default class DoubanMusicLoadHandler extends DoubanAbstractLoadHandler<DoubanMusicSubject> {
 
@@ -36,12 +37,11 @@ export default class DoubanMusicLoadHandler extends DoubanAbstractLoadHandler<Do
 
 	analysisUser(html: CheerioAPI, context: HandleContext): {data:CheerioAPI ,  userState: UserStateSubject} {
 		const rate = html('input#n_rating').val();
-		const tagsStr = html('span#rating').next().next().text().trim();
-		const tags = tagsStr ? tagsStr.replace('标签:', '').trim().split(' ') : null;
+		const tags = DoubanPageParser.parseUserTags(html);
 		const stateWord = html('div#interest_sect_level > div.a_stars > span.mr10').text().trim();
 		const collectionDateStr = html('div#interest_sect_level > div.a_stars > span.mr10').next().text().trim();
 		const userState1 = DoubanAbstractLoadHandler.getUserState(stateWord);
-		const component = html('span#rating').next().next().next().next().text().trim();
+		const component = DoubanPageParser.parseUserComment(html);
 
 		const userState: UserStateSubject = {
 			tags: tags,
@@ -55,12 +55,13 @@ export default class DoubanMusicLoadHandler extends DoubanAbstractLoadHandler<Do
 
 	parseSubjectFromHtml(html: CheerioAPI, context: HandleContext): DoubanMusicSubject {
 		const title = html(html("head > meta[property= 'og:title']").get(0)).attr("content");
-		let desc:string = html("span.all.hidden").text();
+		let desc:string = DoubanPageParser.extractText(html, [
+			"#link-report span.all.hidden p",
+			"#link-report span.all.hidden",
+			"span[property='v:summary']",
+		]);
 		if (!desc) {
-			desc = html("span[property='v:summary']").text();
-		}
-		if (!desc) {
-			desc = html(html("head > meta[property= 'og:description']").get(0)).attr("content");
+			desc = DoubanPageParser.normalizeText(html("head > meta[property='og:description']").attr("content"));
 		}
 
 		const url = html(html("head > meta[property= 'og:url']").get(0)).attr("content");

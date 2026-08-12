@@ -9,7 +9,20 @@ describe("DesktopHttpUtil", () => {
 	let port: number;
 
 	beforeAll(done => {
+		let retryAttempts = 0;
 		server = createServer((request, response) => {
+			if (request.url === "/hang") {
+				return;
+			}
+			if (request.url === "/retry") {
+				retryAttempts++;
+				if (retryAttempts === 1) {
+					request.socket.destroy();
+					return;
+				}
+				response.writeHead(200).end("retried");
+				return;
+			}
 			if (request.url === "/verify") {
 				const chunks: Buffer[] = [];
 				request.on("data", chunk => chunks.push(chunk));
@@ -52,5 +65,25 @@ describe("DesktopHttpUtil", () => {
 
 		expect(response.status).toBe(200);
 		expect(response.textString).toBe("detail page");
+	});
+
+	it("aborts a request that never completes", async () => {
+		await expect(DesktopHttpUtil.request(
+			`http://127.0.0.1:${port}/hang`,
+			{},
+			undefined,
+			{timeoutMs: 30, retryCount: 0},
+		)).rejects.toThrow("timed out");
+	});
+
+	it("retries a failed GET a finite number of times", async () => {
+		const response = await DesktopHttpUtil.request(
+			`http://127.0.0.1:${port}/retry`,
+			{},
+			undefined,
+			{timeoutMs: 1000, retryCount: 1},
+		);
+		expect(response.status).toBe(200);
+		expect(response.textString).toBe("retried");
 	});
 });

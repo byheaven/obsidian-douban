@@ -9,6 +9,7 @@ import StringUtil from "../../../utils/StringUtil";
 import {UserStateSubject} from "../model/UserStateSubject";
 import {moment} from "obsidian";
 import {DataField} from "../../../utils/model/DataField";
+import DoubanPageParser from "../../../utils/DoubanPageParser";
 
 export default class DoubanBookLoadHandler extends DoubanAbstractLoadHandler<DoubanBookSubject> {
 
@@ -46,7 +47,7 @@ export default class DoubanBookLoadHandler extends DoubanAbstractLoadHandler<Dou
 
 	analysisUser(html: CheerioAPI, context: HandleContext): {data:CheerioAPI ,  userState: UserStateSubject} {
 		const rate = html('input#n_rating').val();
-		const tags = this.getTags(html);
+		const tags = DoubanPageParser.parseUserTags(html);
 		const stateWord = html('div#interest_sect_level > div.a_stars > span.mr10').text().trim();
 		const collectionDateStr = html('div#interest_sect_level > div.a_stars > span.mr10').next().text().trim();
 		const userState1 = DoubanAbstractLoadHandler.getUserState(stateWord);
@@ -63,24 +64,6 @@ export default class DoubanBookLoadHandler extends DoubanAbstractLoadHandler<Dou
 			comment: comment
 		}
 		return {data: html, userState: userState};
-	}
-
-	private getTags(html: CheerioAPI): string[] {
-		// Tags are no longer adjacent to #rating on current book pages; find the
-		// labeled "标签:" text inside the user-state block instead.
-		const tagsText = html('#interest_sect_level span.color_gray')
-			.get()
-			.map(span => html(span).text().trim())
-			.find(text => /^标签[:：]/.test(text));
-		if (!tagsText) {
-			return null;
-		}
-		const tags = tagsText
-			.replace(/^标签[:：]/, '')
-			.trim()
-			.split(/\s+/)
-			.filter(tag => tag);
-		return tags.length > 0 ? tags : null;
 	}
 
 	private getBookStateName(stateWord: string): string {
@@ -103,14 +86,18 @@ export default class DoubanBookLoadHandler extends DoubanAbstractLoadHandler<Dou
 
 
 	parseSubjectFromHtml(html: CheerioAPI, context: HandleContext): DoubanBookSubject {
-		let desc = html(".intro p").text();
+		let desc = DoubanPageParser.extractText(html, [
+			"#link-report .all.hidden .intro p",
+			".related_info .all.hidden .intro p",
+			".intro p",
+		]);
 		if (!desc) {
-			desc = html(html("head > meta[property= 'og:description']").get(0)).attr("content");
+			desc = DoubanPageParser.normalizeText(html("head > meta[property='og:description']").attr("content"));
 		}
 		const image = html(html("head > meta[property= 'og:image']").get(0)).attr("content");
 		let item = html(html("head > script[type='application/ld+json']").get(0)).text();
 		item = super.html_decode(item);
-		const obj = JSON.parse(item.replace(/[\r\n\t\s+]/g, ''));
+		const obj = JSON.parse(item);
 		const title = obj.name;
 		const url = obj.url;
 		const author = obj.author.map((a: any) => a.name);
@@ -131,7 +118,9 @@ export default class DoubanBookLoadHandler extends DoubanAbstractLoadHandler<Dou
 				html(info.parent).find("a").map((index, a) => {
 					value.push(html(a).text().trim());
 				});
-			} else if (key.indexOf('作者') >= 0 || key.indexOf('丛书') >= 0 || key.indexOf('出版社') >= 0 || key.indexOf('出品方') >= 0) {
+			} else if (key.indexOf('出版社') >= 0 || key.indexOf('出品方') >= 0) {
+				value = DoubanPageParser.collectFollowingFieldText(html, info);
+			} else if (key.indexOf('作者') >= 0 || key.indexOf('丛书') >= 0) {
 				value = html(info.next.next).text().trim();
 			} else {
 				value = html(info.next).text().trim();
@@ -165,6 +154,12 @@ export default class DoubanBookLoadHandler extends DoubanAbstractLoadHandler<Dou
 			genre: [],
 			binding: valueMap.has('binding') ? valueMap.get('binding') : "",
 			producer: valueMap.has('producer') ? valueMap.get('producer') : "",
+			popularComments: Array.from(new Set(
+				html('#hot-comments .comment-item .short, #comments .comment-item .short, .comment-item .short')
+					.get()
+					.map(element => DoubanPageParser.normalizeText(html(element).text()))
+					.filter(Boolean),
+			)).slice(0, 5),
 		};
 		return result;
 	}
@@ -172,34 +167,10 @@ export default class DoubanBookLoadHandler extends DoubanAbstractLoadHandler<Dou
 	private getComment(html: CheerioAPI) {
 		// Douban book pages render the user comment as a plain span alongside
 		// state/date/tag/rating labels, so filter metadata labels before choosing it.
-		let comment = html('#interest_sect_level span')
-			.get()
-			.map(span => html(span).text().trim())
-			.filter(text => this.isCommentCandidate(text))
-			.pop();
-		if (comment) {
-			return comment;
-		}
-		return this.getPropertyValue(html, PropertyName.comment);
-	}
-
-	private isCommentCandidate(text: string): boolean {
-		if (!text) {
-			return false;
-		}
-		if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
-			return false;
-		}
-		if (/^标签[:：]/.test(text)) {
-			return false;
-		}
-		if (/^(我的)?评价[:：]?$/.test(text)) {
-			return false;
-		}
-		if (text.indexOf('我读过这本书') >= 0 || text.indexOf('我想读这本书') >= 0 || text.indexOf('我在读这本书') >= 0) {
-			return false;
-		}
-		return true;
+		return DoubanPageParser.parseUserComment(
+			html,
+			this.doubanPlugin.settingsManager.getSelector(this.getSupportType(), PropertyName.comment),
+		);
 	}
 
 

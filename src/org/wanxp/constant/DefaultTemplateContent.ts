@@ -119,6 +119,26 @@ desc: {{desc}}
 ---
 
 ![image]({{image}})	
+`,theaterTemplateFileContent: `---
+doubanId: {{id}}
+title: {{title}}
+type: {{type}}
+score: {{score}}
+scoreStar: {{scoreStar}}
+genre: {{genre}}
+datePublished: {{datePublished}}
+director: {{director}}
+actor: {{actor}}
+author: {{author}}
+publisher: {{publisher}}
+url: {{url}}
+aliases: {{aliases}}
+language: {{language}}
+createTime: {{currentDate}} {{currentTime}}
+desc: {{desc}}
+---
+
+![image]({{image}})
 `,teleplayTemplateFileContent: `---
 doubanId: {{id}}
 title: {{title}}
@@ -295,6 +315,34 @@ desc: {{desc}}
 
 Comment: 
 ---
+{{myComment}}
+`,theaterTemplateFileContent: `---
+doubanId: {{id}}
+title: {{title}}
+type: {{type}}
+score: {{score}}
+scoreStar: {{scoreStar}}
+myRating: {{myRating}}
+myRatingStar: {{myRatingStar}}
+genre: {{genre}}
+datePublished: {{datePublished}}
+director: {{director}}
+actor: {{actor}}
+author: {{author}}
+publisher: {{publisher}}
+tags: {{myTags}}
+state: {{myState}}
+url: {{url}}
+aliases: {{aliases}}
+language: {{language}}
+createTime: {{currentDate}} {{currentTime}}
+collectionDate: {{myCollectionDate}}
+desc: {{desc}}
+---
+
+![image]({{image}})
+
+Comment:
 {{myComment}}
 `,teleplayTemplateFileContent: `---
 doubanId: {{id}}

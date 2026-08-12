@@ -330,6 +330,8 @@ ${i18nHelper.getMessage('160225')}
 <strong>myState</strong> → ${i18nHelper.getMessage('160228')}<br>
 <strong>myComment</strong> → ${i18nHelper.getMessage('160229')}<br>
 <strong>myCollectionDate</strong> → ${i18nHelper.getMessage('160230')}<br>
+<strong>imageName</strong> → ${i18nHelper.getMessage('imageNameDesc')}<br>
+<strong>popularComments</strong> → ${i18nHelper.getMessage('popularCommentsDesc')}<br>
 
 
 `

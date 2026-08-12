@@ -1,17 +1,16 @@
 import en from './locale/en';
 import zhCN from './locale/zh-cn';
+import {getLanguage} from 'obsidian';
 
 const localeMap: { [k: string]: Partial<typeof en> } = {
 	en,
 	zh: zhCN,
 };
 
-const lang = window.localStorage.getItem('language');
-const locale = localeMap[lang || 'en'];
-
-
 export default class I18nHelper {
 	public getMessage(str: keyof typeof en | string, ...params: any[]): string {
+		const lang = this.getCurrentLanguage();
+		const locale = localeMap[lang];
 		if (!locale) {
 			console.error('Error: obsidian douban locale not found', lang);
 		}
@@ -23,6 +22,20 @@ export default class I18nHelper {
 			}
 		}
 		return val;
+	}
+
+	private getCurrentLanguage(): string {
+		let language = '';
+		try {
+			language = typeof getLanguage === 'function' ? getLanguage() : '';
+		} catch (_error) {
+			// Obsidian can still be initializing while plugin modules are evaluated.
+		}
+		if (!language && typeof window !== 'undefined') {
+			language = window.localStorage?.getItem('language') || '';
+		}
+		language = language.toLowerCase();
+		return language === 'zh-cn' || language === 'zh-hans' || language.startsWith('zh') ? 'zh' : 'en';
 	}
 
 	private replaceAll(index: number, message: string, replace: string): string {

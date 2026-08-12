@@ -83,33 +83,68 @@
 	margin-left: 5px;
 }
 
+.obsidian_douban_search_fields {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
 .obsidian_douban_search_input_type {
 	margin-left: 5px;
-	float: right;
+	flex: 0 0 auto;
 }
 
 .obsidian_douban_search_input_content {
-    margin-left: 5px;
-    width: 80%;
-	float: left;
-
+	margin-left: 5px;
+	flex: 1 1 16rem;
+	min-width: 0;
 }
 
 .obsidian_douban_search_controls {
 	margin-top: 20px;
 	margin-right: 5px;
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+.obsidian_douban_batch_urls {
+	box-sizing: border-box;
+	width: 100%;
+	resize: vertical;
 }
 
 .obsidian_douban_search_button {
-	margin-top: 20px;
-	margin-right: 5px;
-	float:right;
+	margin: 0;
 }
 
 .obsidian_douban_cancel_button {
-	margin-top: 20px;
-	margin-right: 5px;
-	float: right;
+	margin: 0;
+}
+
+.obsidian_douban_search_input_content + .obsidian_douban_search_input_type,
+.obsidian_douban_search_input_content {
+	box-sizing: border-box;
+}
+
+.obsidian_douban_search_input_content .search-input-container,
+.obsidian_douban_search_input_content input {
+	width: 100%;
+}
+
+.obsidian_douban_search_input_content,
+.obsidian_douban_search_input_type {
+	align-self: center;
+}
+
+.obsidian_douban_search_input_content:first-child {
+	display: flex;
+}
+
+.obsidian_douban_search_input_content:first-child,
+.obsidian_douban_search_input_type:first-child {
+	margin-top: 0;
 }
 
 .obsidian_douban_status_button {
@@ -208,6 +243,3 @@
 .setting-item-control.obsidian_douban_template_file_select > div.search-input-container {
 	width: 100%;
 }
-
-
-

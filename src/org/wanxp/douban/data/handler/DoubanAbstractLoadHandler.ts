@@ -35,6 +35,7 @@ import {DataField} from "../../../utils/model/DataField";
 import NumberUtil from "../../../utils/NumberUtil";
 import {DoubanHttpUtil} from "../../../utils/DoubanHttpUtil";
 import {logger} from "bs-logger";
+import DoubanPageParser from "../../../utils/DoubanPageParser";
 
 export default abstract class DoubanAbstractLoadHandler<T extends DoubanSubject> implements DoubanSubjectLoadHandler<T> {
 
@@ -232,17 +233,53 @@ export default abstract class DoubanAbstractLoadHandler<T extends DoubanSubject>
 			return "";
 		}
 		if (context.listItem) {
-			const newName = context.listItem.title.trim().replaceAll(' ', '');
+			const listedName = context.listItem.title.trim();
 			switch (personNameMode) {
 				case PersonNameMode.CH_NAME:
-					return newName;
-					break;
+					return listedName;
 				case PersonNameMode.EN_NAME:
-					return name.trim().replaceAll(' ', '').replaceAll(newName, '');
-                    break;
+					const originalName = name.trim();
+					if (this.removeWhitespace(originalName) === this.removeWhitespace(listedName)) {
+						return originalName;
+					}
+					const withoutListedName = this.removeTextIgnoringWhitespace(originalName, listedName).trim();
+					return withoutListedName || originalName;
 			}
 		}
 		return this.getPersonNameByMode(name, personNameMode);
+	}
+
+	private removeWhitespace(value: string): string {
+		return (value || '').replace(/\s+/g, '');
+	}
+
+	private removeTextIgnoringWhitespace(value: string, textToRemove: string): string {
+		const compactNeedle = this.removeWhitespace(textToRemove);
+		if (!compactNeedle) {
+			return value;
+		}
+		const compactValue = this.removeWhitespace(value);
+		const compactIndex = compactValue.indexOf(compactNeedle);
+		if (compactIndex < 0) {
+			return value;
+		}
+		let compactPosition = 0;
+		let start = -1;
+		let end = value.length;
+		for (let index = 0; index < value.length; index++) {
+			if (/\s/.test(value[index])) {
+				continue;
+			}
+			if (compactPosition === compactIndex) {
+				start = index;
+			}
+			compactPosition++;
+			if (compactPosition === compactIndex + compactNeedle.length) {
+				end = index + 1;
+				break;
+			}
+		}
+		return start >= 0 ? value.substring(0, start) + value.substring(end) : value;
 	}
 
 	// html_encode(str: string): string {
@@ -284,6 +321,7 @@ export default abstract class DoubanAbstractLoadHandler<T extends DoubanSubject>
 	}
 
 	private buildVariableMap(extract: T, context: HandleContext) {
+		extract.desc = DoubanPageParser.normalizeText(extract.desc);
 		const variableMap: Map<string, DataField> = new Map();
 		for (const [key, value] of Object.entries(extract)) {
 			if (!value) {
@@ -305,6 +343,13 @@ export default abstract class DoubanAbstractLoadHandler<T extends DoubanSubject>
 			DataValueType.url,
 			extract.imageUrl,
 			extract.imageUrl
+		));
+		const imageName = this.getImageBasename(extract.image);
+		variableMap.set(DoubanParameterName.IMAGE_NAME, new DataField(
+			DoubanParameterName.IMAGE_NAME,
+			DataValueType.string,
+			imageName,
+			imageName,
 		));
 		variableMap.set(DoubanParameterName.YEAR_PUBLISHED, new DataField(
 			DoubanParameterName.YEAR_PUBLISHED,
@@ -431,6 +476,9 @@ export default abstract class DoubanAbstractLoadHandler<T extends DoubanSubject>
 				break;
 			case SupportType.note:
 				templateKey = TemplateKey.noteTemplateFile;
+				break;
+			case SupportType.theater:
+				templateKey = TemplateKey.theaterTemplateFile;
 				break;
 			default:
 				templateKey = null;
@@ -595,7 +643,22 @@ export default abstract class DoubanAbstractLoadHandler<T extends DoubanSubject>
 			extract.image,
 			extract.image
 		));
+		const imageName = this.getImageBasename(extract.image);
+		variableMap.set(DoubanParameterName.IMAGE_NAME, new DataField(
+			DoubanParameterName.IMAGE_NAME,
+			DataValueType.string,
+			imageName,
+			imageName,
+		));
 
+	}
+
+	private getImageBasename(image: string): string {
+		if (!image) {
+			return '';
+		}
+		const cleanPath = image.split(/[?#]/, 1)[0].replace(/\\/g, '/');
+		return cleanPath.substring(cleanPath.lastIndexOf('/') + 1);
 	}
 
 	private async handleImage(image: string, folder: string, filename: string, context: HandleContext, showError: boolean, headers?: any) {

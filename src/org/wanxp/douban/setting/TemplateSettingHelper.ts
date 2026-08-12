@@ -23,6 +23,7 @@ export function constructTemplateUI(containerEl: HTMLElement, manager: SettingsM
 	new Setting(containerEl).then(createFileSelectionSetting({containerEl: containerEl, name: '120401', desc: '120402', placeholder: '121701', key: 'noteTemplateFile', manager: manager}));
 	new Setting(containerEl).then(createFileSelectionSetting({containerEl: containerEl, name: '121301', desc: '121302', placeholder: '121701', key: 'gameTemplateFile', manager: manager}));
 	new Setting(containerEl).then(createFileSelectionSetting({containerEl: containerEl, name: '121801', desc: '121802', placeholder: '121701', key: 'teleplayTemplateFile', manager: manager}));
+	new Setting(containerEl).then(createFileSelectionSetting({containerEl: containerEl, name: 'theaterTemplateName', desc: 'theaterTemplateDesc', placeholder: '121701', key: 'theaterTemplateFile', manager: manager}));
 }
 
 export function createFileSelectionSetting({containerEl, name, desc, placeholder, key, manager
@@ -113,4 +114,3 @@ export function createFolderSelectionSettingInput({
 		});
 	};
 }
-

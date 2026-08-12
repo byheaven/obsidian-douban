@@ -24,6 +24,7 @@ export const DEFAULT_SETTINGS: DoubanPluginSetting = {
 	noteTemplateFile: ``,
 	gameTemplateFile: ``,
 	teleplayTemplateFile: ``,
+	theaterTemplateFile: ``,
 	searchUrl: 'https://www.douban.com/search?q=',
 	dateFormat: "yyyy-MM-DD",
 	timeFormat: "HH:mm:ss",
@@ -50,6 +51,7 @@ export const DEFAULT_SETTINGS: DoubanPluginSetting = {
 	loginHeadersContent: '',
 	cacheImage: true,
 	cacheHighQuantityImage: true,
+	showAfterCreate: true,
 	attachmentPath: 'assets',
 	attachmentFileName: "{{title}}",
 	syncHandledDataArray: [],
@@ -64,5 +66,4 @@ export const DEFAULT_SETTINGS: DoubanPluginSetting = {
 	arrayLengthLimits: [],
 
 }
-
 

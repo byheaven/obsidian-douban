@@ -652,10 +652,10 @@ export default {
 	'500203': `在看`,
 	'500204': `看过`,
 
-	'500301': `未看`,
-	'500302': `想看`,
-	'500303': `在看`,
-	'500304': `看过`,
+	'500301': `未读`,
+	'500302': `想读`,
+	'500303': `在读`,
+	'500304': `读过`,
 
 	'500401': `未听`,
 	'500402': `想听`,
@@ -726,5 +726,16 @@ export default {
 	'HOUR': `时`,
 	'MINUTE': `分`,
 	'SECOND': `秒`,
+	'theaterTemplateName': `舞台剧模板`,
+	'theaterTemplateDesc': `创建舞台剧笔记时使用的模板`,
+	'showAfterCreateName': `创建后打开笔记`,
+	'showAfterCreateDesc': `自动打开新创建的笔记；关闭后可在后台连续导入。`,
+	'imageNameDesc': `带扩展名、不含目录的本地图片文件名`,
+	'popularCommentsDesc': `图书热门短评，最多五条（数组）`,
+	'batchImportCommand': `按豆瓣 URL 批量导入`,
+	'batchImportTitle': `批量导入豆瓣条目`,
+	'batchImportDesc': `每行输入一个豆瓣条目 URL；无效或失败的条目会跳过并继续。`,
+	'batchImportProgress': `正在导入 {0}/{1}`,
+	'batchImportSummary': `批量导入完成：成功 {0} 条，失败 {1} 条。\n{2}`,
 
 }

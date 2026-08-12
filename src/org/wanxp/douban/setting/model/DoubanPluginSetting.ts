@@ -15,6 +15,7 @@ export interface DoubanPluginSetting {
 	noteTemplateFile: string,
 	gameTemplateFile: string,
 	teleplayTemplateFile: string,
+	theaterTemplateFile: string,
 	dateFormat: string,
 	timeFormat: string,
 	searchUrl: string,
@@ -35,7 +36,8 @@ export interface DoubanPluginSetting {
 	cacheHighQuantityImage: boolean,
 	attachmentPath: string,
 	attachmentFileName: string,
-	pictureBedFlag: boolean
+	pictureBedFlag: boolean,
+	showAfterCreate: boolean,
 	pictureBedType: string;
 	pictureBedSetting: PictureBedSetting;
 	syncHandledDataArray: SyncHandledData[],

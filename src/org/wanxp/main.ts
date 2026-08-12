@@ -33,6 +33,8 @@ import GithubUtil from "./utils/GithubUtil";
 import {DoubanPluginOnlineData} from "./douban/setting/model/DoubanPluginOnlineData";
 import SearcherV2 from "./douban/data/search/SearchV2";
 import {SearchPage} from "./douban/data/model/SearchPage";
+import DoubanBatchImportModal from "./douban/component/DoubanBatchImportModal";
+import DoubanUrlUtil from "./utils/DoubanUrlUtil";
 
 export default class DoubanPlugin extends Plugin {
 	public settings: DoubanPluginSetting;
@@ -167,6 +169,44 @@ export default class DoubanPlugin extends Plugin {
 		new DoubanSyncModal(this.app, this, context).open();
 	}
 
+	async batchImportUrls(urls: string[], context: HandleContext) {
+		let success = 0;
+		const failures: string[] = [];
+		for (let index = 0; index < urls.length; index++) {
+			const parsed = DoubanUrlUtil.parse(urls[index]);
+			this.showStatus(i18nHelper.getMessage('batchImportProgress', index + 1, urls.length));
+			if (!parsed) {
+				failures.push(urls[index]);
+				continue;
+			}
+			const item = {
+				id: parsed.id,
+				type: parsed.type,
+				title: parsed.id,
+				url: parsed.url,
+			} as DoubanSubject;
+			try {
+				const result = await this.doubanExtractHandler.handle(item, {
+					...context,
+					listItem: parsed.type === SupportType.theater ? item : undefined,
+					showAfterCreate: false,
+				});
+				if (result && result.handledStatus === SubjectHandledStatus.saved) {
+					success++;
+				} else {
+					failures.push(parsed.url);
+				}
+			} catch (_error) {
+				failures.push(parsed.url);
+			}
+			if (index < urls.length - 1) {
+				await new Promise(resolve => setTimeout(resolve, BasicConst.CALL_DOUBAN_DELAY));
+			}
+		}
+		new Notice(i18nHelper.getMessage('batchImportSummary', success, failures.length, failures.join('\n')));
+		this.clearStatusBarDelay();
+	}
+
 	async onload() {
 		console.log("----douban-plugins-load------")
 		await this.loadSettings();
@@ -184,8 +224,22 @@ export default class DoubanPlugin extends Plugin {
 					settings: this.settings,
 					userComponent: this.userComponent,
 				netFileHandler: this.netFileHandler,
-				showAfterCreate:true,
+				showAfterCreate:this.settings.showAfterCreate,
 				action: Action.SearchAndCrate}, this.settings.searchDefaultType),
+		});
+
+		this.addCommand({
+			id: "batch-import-douban-urls",
+			name: i18nHelper.getMessage("batchImportCommand"),
+			callback: () => new DoubanBatchImportModal(this.app, this, {
+				plugin: this,
+				mode: SearchHandleMode.FOR_CREATE,
+				settings: this.settings,
+				userComponent: this.userComponent,
+				netFileHandler: this.netFileHandler,
+				showAfterCreate: false,
+				action: Action.SearchAndCrate,
+			}).open(),
 		});
 
 		this.addCommand({
@@ -236,7 +290,7 @@ export default class DoubanPlugin extends Plugin {
 					settings: this.settings,
 					userComponent: this.userComponent,
 					netFileHandler: this.netFileHandler,
-					showAfterCreate:true,
+					showAfterCreate:this.settings.showAfterCreate,
 					action: Action.SearchAndCrate}, SupportType.movie),
 		});
 
@@ -249,7 +303,7 @@ export default class DoubanPlugin extends Plugin {
 					settings: this.settings,
 					userComponent: this.userComponent,
 					netFileHandler: this.netFileHandler,
-					showAfterCreate:true,
+					showAfterCreate:this.settings.showAfterCreate,
 					action: Action.SearchAndCrate}, SupportType.book),
 		});
 
@@ -262,7 +316,7 @@ export default class DoubanPlugin extends Plugin {
 					settings: this.settings,
 					userComponent: this.userComponent,
 					netFileHandler: this.netFileHandler,
-					showAfterCreate:true,
+					showAfterCreate:this.settings.showAfterCreate,
 					action: Action.SearchAndCrate}, SupportType.music),
 		});
 
@@ -275,7 +329,7 @@ export default class DoubanPlugin extends Plugin {
 					settings: this.settings,
 					userComponent: this.userComponent,
 					netFileHandler: this.netFileHandler,
-					showAfterCreate:true,
+					showAfterCreate:this.settings.showAfterCreate,
 					action: Action.SearchAndCrate}, SupportType.game),
 		});
 
@@ -382,4 +436,3 @@ export default class DoubanPlugin extends Plugin {
 	}
 
 }
-

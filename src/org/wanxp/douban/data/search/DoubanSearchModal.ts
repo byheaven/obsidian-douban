@@ -10,6 +10,7 @@ export class DoubanSearchModal extends Modal {
 	searchType: SupportType = SupportType.all;
 	plugin: DoubanPlugin;
 	context: HandleContext
+	private submitted = false;
 
 	constructor(app: App, plugin: DoubanPlugin, context: HandleContext, type: SupportType) {
 		super(app);
@@ -25,6 +26,7 @@ export class DoubanSearchModal extends Modal {
 
 		contentEl.createEl("h3", {text: i18nHelper.getMessage('110003')});
 		const content = contentEl.createDiv("content");
+		content.addClass("obsidian_douban_search_fields");
 
 		const inputs = content.createDiv("inputs");
 		const searchInput = new TextComponent(inputs).onChange((searchTerm) => {
@@ -37,6 +39,7 @@ export class DoubanSearchModal extends Modal {
 			if (event.key === "Enter") {
 				event.preventDefault();
 				event.stopImmediatePropagation();
+				this.submitted = true;
 				this.close();
 			}
 		});
@@ -58,6 +61,7 @@ export class DoubanSearchModal extends Modal {
 					.setButtonText(i18nHelper.getMessage('110004'))
 					.setCta()
 					.onClick(() => {
+						this.submitted = true;
 						this.close();
 					}).setClass( "obsidian_douban_search_button");
 		new ButtonComponent(controls)
@@ -71,7 +75,7 @@ export class DoubanSearchModal extends Modal {
 	async onClose() {
 		let {contentEl} = this;
 		contentEl.empty();
-		if (this.searchTerm) {
+		if (this.submitted && this.searchTerm) {
 			await this.plugin.search(this.searchTerm, this.searchType, this.context);
 		}
 	}

@@ -8,6 +8,7 @@ export default class DoubanSubject {
 	score: number;
 	image: string;
 	imageUrl: string;
+	imageName?: string;
 	url: string;
 	desc: string;
 	publisher: string;
@@ -29,6 +30,7 @@ export const DoubanParameter = {
 	SCORE: '{{score}}',
 	IMAGE: '{{image}}',
 	IMAGE_URL: '{{imageData.url}}',
+	IMAGE_NAME: '{{imageName}}',
 	URL: '{{url}}',
 	DESC: '{{desc}}',
 	PUBLISHER: '{{publisher}}',
@@ -48,6 +50,7 @@ export const DoubanParameterName = {
 	SCORE_STAR: 'scoreStar',
 	IMAGE: 'image',
 	IMAGE_URL: 'imageData.url',
+	IMAGE_NAME: 'imageName',
 	URL: 'url',
 	DESC: 'desc',
 	PUBLISHER: 'publisher',
@@ -58,4 +61,3 @@ export const DoubanParameterName = {
 	CURRENT_DATE: 'currentDate',
 	CURRENT_TIME: 'currentTime',
 }
-

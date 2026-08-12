@@ -9,7 +9,7 @@ import {UserStateSubject} from "../model/UserStateSubject";
 import {moment} from "obsidian";
 import {TITLE_ALIASES_SPECIAL_CHAR_REG_G} from "../../../utils/YamlUtil";
 import {DataField} from "../../../utils/model/DataField";
-import {b} from "@shikijs/engine-javascript/dist/shared/engine-javascript.BnuFKbIS";
+import DoubanPageParser from "../../../utils/DoubanPageParser";
 
 export default class DoubanGameLoadHandler extends DoubanAbstractLoadHandler<DoubanGameSubject> {
 
@@ -49,14 +49,12 @@ export default class DoubanGameLoadHandler extends DoubanAbstractLoadHandler<Dou
 
 	analysisUser(html: CheerioAPI, context: HandleContext): {data:CheerioAPI ,  userState: UserStateSubject} {
 		let rate = html('input#n_rating').val();
-		const rating = html('span#rating');
-		const tagsStr = rating.parent().next().text().trim();
-		const tags = tagsStr ? tagsStr.replace('标签:', '').trim().split(' ') : null;
+		const tags = DoubanPageParser.parseUserTags(html);
 		const collected = html('div.collection-section > div.collection-rating-stars > div.collection-collected');
 		const stateWord = collected.find('span.collection-result').text().trim();
 		const collectionDateStr = collected.find('span.color_gray').text().trim();
 		const userState1 = DoubanAbstractLoadHandler.getUserState(stateWord);
-		const component = rating.parent().next().next().text().trim();
+		const component = DoubanPageParser.parseUserComment(html);
 
 		const userState: UserStateSubject = {
 			tags: tags,
@@ -79,7 +77,10 @@ export default class DoubanGameLoadHandler extends DoubanAbstractLoadHandler<Dou
 		let detailDom = html(html("dl.thing-attr").get(0));
 		let dt = detailDom.find("dt");
 		let image = html(html("#content > div > div.article > div.mod.item-subject > div.item-subject-info > div > a > img").get(0)).attr("src");
-		let desc = html(html("#link-report > p").get(0)).text();
+		let desc = DoubanPageParser.extractText(html, [
+			"#link-report .all.hidden p",
+			"#link-report p",
+		]);
 
 		let url = `https://www.douban.com/game/${id}/`;
 		let valueMap = new Map<string, any>();
@@ -155,4 +156,3 @@ const GameKeyValueMap: Map<string, string> = new Map(
 		['发行日期:', 'datePublished'],
 	]
 );
-

@@ -61,7 +61,6 @@ export const FileUtil = {
 	replaceSpecialCharactersForFileName(fileNameInput: string): string {
 		let fileName = fileNameInput.replaceAll(/[\\/:*?"<>|]/g, '_');
 		fileName = fileName.replaceAll(/[\n\r\t]/g, '_');
-		fileName = fileName.replaceAll(/\s+/g, '_');
 		fileName = fileName.replaceAll(/^\.+/g, '_'); // remove leading dots
 		fileName = fileName.replaceAll(/\.+$/g, '_'); // remove trailing dots
 		fileName = fileName.replaceAll(/_+/g, '_'); // remove duplicate underscores

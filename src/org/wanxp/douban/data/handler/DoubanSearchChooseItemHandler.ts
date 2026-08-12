@@ -26,25 +26,24 @@ export class DoubanSearchChooseItemHandler {
 		this._app = app;
 		this._doubanPlugin = doubanPlugin;
 		this._doubanSubjectHandlerDefault = new DoubanOtherLoadHandler(doubanPlugin);
-		this._doubanSubjectHandlers = [new DoubanMovieLoadHandler(doubanPlugin), new DoubanBookLoadHandler(doubanPlugin),
+		this._doubanSubjectHandlers = [new DoubanTheaterLoadHandler(doubanPlugin), new DoubanMovieLoadHandler(doubanPlugin), new DoubanBookLoadHandler(doubanPlugin),
 			new DoubanTeleplayLoadHandler(doubanPlugin),
 			new DoubanMusicLoadHandler(doubanPlugin),
 			new DoubanNoteLoadHandler(doubanPlugin),
 			new DoubanGameLoadHandler(doubanPlugin),
-			new DoubanTheaterLoadHandler(doubanPlugin),
 			this._doubanSubjectHandlerDefault];
 	}
 
-	public async handle(searchExtract: DoubanSubject, context: HandleContext): Promise<void> {
+	public async handle(searchExtract: DoubanSubject, context: HandleContext): Promise<DoubanSubject | void> {
 		if (!searchExtract) {
 			return;
 		}
 		let doubanSubjectHandlers: DoubanSubjectLoadHandler<DoubanSubject>[] = this._doubanSubjectHandlers
 			.filter(h => h.support(searchExtract));
 		if (doubanSubjectHandlers && doubanSubjectHandlers.length > 0) {
-			await doubanSubjectHandlers[0].handle(searchExtract.id, context);
+			return await doubanSubjectHandlers[0].handle(searchExtract.id, context);
 		} else {
-			await this._doubanSubjectHandlerDefault.handle(searchExtract.id, context);
+			return await this._doubanSubjectHandlerDefault.handle(searchExtract.id, context);
 		}
 	}
 
@@ -65,4 +64,3 @@ export class DoubanSearchChooseItemHandler {
 	}
 
 }
-

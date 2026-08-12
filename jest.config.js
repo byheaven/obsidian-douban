@@ -9,7 +9,8 @@ module.exports = {
         "jsx"
     ],
     moduleNameMapper: {
-        '^@APP/(.*)$': '<rootDir>/src/douban/$1'
+        '^@APP/(.*)$': '<rootDir>/src/douban/$1',
+        '^src/(.*)$': '<rootDir>/src/$1'
     },
     collectCoverageFrom: [
         "**/baseTs/upperFirst.ts",
